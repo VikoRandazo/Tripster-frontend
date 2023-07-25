@@ -1,0 +1,37 @@
+@import "../../../styles/colorPallete.module.scss";
+@import "../../../styles/elements.module.scss";
+@import "../../../styles/mixins.module.scss";
+
+.ConfirmContent {
+  width: 25vw;
+  height: 25vh;
+  padding: 1em 2em;
+  @extend %flexCol;
+
+  & > .title {
+    width: 100%;
+    @extend %flexRow;
+    align-items: center;
+    justify-content: center;
+    // background-color: tomato;
+    flex-grow: 1;
+  }
+
+  & > .message {
+    @extend %flexRow;
+    justify-content: center;
+    // background-color: blueviolet;
+  }
+
+  & > .actions {
+    @extend %flexRow;
+    align-items: flex-end;
+    height: fit-content;
+    gap: 0.5em;
+    flex-grow: 1;
+    margin-top: auto;
+    // background-color: antiquewhite;
+    width: 100%;
+
+  }
+}

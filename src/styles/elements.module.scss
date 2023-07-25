@@ -1,0 +1,256 @@
+@import "../styles/colorPallete.module.scss";
+@import "../styles/mixins.module.scss";
+@import "../styles/keyFrames.module.scss";
+p {
+  color: $colorPara;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h3 {
+  color: $colorDivider;
+  font-weight: 500;
+  filter: drop-shadow(0 0.25em 0.25em rgba($colorTitle, 0.6));
+}
+
+h5 {
+  color: $colorTitle;
+}
+
+button {
+  width: max-content;
+  border: none;
+  height: 3em;
+  border-radius: 0.5em;
+  aspect-ratio: 16 / 9;
+  outline: none;
+  font-size: 0.875em;
+  @extend %flexRow;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+  flex: 1 0 100px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &.submittingBtn {
+    height: 3em;
+    background-color: rgba($colorPrimary, 1);
+    aspect-ratio: 2/1;
+    flex: 0 0 3em;
+    position: relative;
+    @extend %flexCol;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5em;
+
+    & > div {
+      position: absolute;
+      height: 1.875em;
+      width: 1.875em;
+      border: 0.25em solid white;
+    }
+  }
+
+  &:is(:active) {
+    scale: 0.98;
+  }
+
+  &.primary {
+    width: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba($colorPrimary, 1);
+    color: $colorDivider;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 80%;
+
+    &:is(:hover) {
+      box-shadow: 0 0.25em 0.5em rgba($colorPrimary, 0.5);
+      transform: translatey(-0.5vh);
+    }
+  }
+
+  &.secondary {
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    color: rgba($colorPara, 0.8);
+    border: 0.125em solid rgba($colorPara, 0.5);
+    max-width: 20%;
+    padding: 0 1em;
+    
+    &:hover {
+      background-color: $colorPara;
+      color: $colorBackgroundPage;
+    }
+  }
+
+  &.warning {
+    width: auto;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba($colorWarning, 0.1);
+    border: 0.125em solid $colorWarning;
+    color: $colorWarning;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 80%;
+    font-weight: 400;
+
+    &:hover {
+      background-color: $colorWarning;
+      color: $colorDivider;
+    }
+  }
+}
+
+select {
+  padding: 0.75em;
+  border-radius: 0.5em;
+  color: $colorPrimary;
+  option {
+    padding: 1em;
+  }
+}
+
+input {
+  padding: 0.75em 1.25em;
+  border-radius: 0.5em;
+  outline: none;
+  border: 0.125em solid transparent;
+  font-size: 0.875em;
+  background-color: rgba($colorElement, 0.3);
+  color: rgba($colorText, 1);
+  transition: all 0.2s ease;
+  width: 100%;
+  flex-grow: 1;
+  max-height: 3em;
+
+  &[type="text"] {
+    width: 100%;
+  }
+
+  &::placeholder {
+    opacity: 0.9;
+    color: rgba($colorActive, 1);
+  }
+  &:focus {
+    border: 0.125em solid $colorText;
+    box-shadow: 0 0.25em 0.75em rgba($colorText, 0.4);
+    &::placeholder {
+      opacity: 0.9;
+      color: rgba($colorActive, 1);
+    }
+  }
+}
+
+textarea {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  outline: none;
+  flex-grow: 1;
+  resize: none;
+  height: 8em;
+  min-height: 4em;
+  border-radius: 0.5em;
+  background-color: rgba($colorElement, 0.3);
+  padding: 0.75em 1.25em;
+  border: 0.125em solid transparent;
+  font-size: 0.875em;
+  color: rgba($colorText, 1);
+  transition: all 0.2s ease;
+  width: 100% ;
+
+  &:focus {
+    border: 0.125em solid $colorText;
+    box-shadow: 0 0.25em 0.75em rgba($colorText, 0.4);
+    &::placeholder {
+      opacity: 0.9;
+      color: rgba($colorActive, 1);
+    }
+  }
+}
+
+label {
+  text-align: left;
+  font-size: 1em;
+  color: rgba($colorLabel, 0.8);
+}
+
+svg {
+  animation: hover 5s infinite, fadeIn 1s;
+  cursor: pointer;
+}
+
+a {
+  cursor: pointer;
+  color: rgba($colorPrimary, 1);
+}
+
+.Btn {
+  @extend %flexRow;
+  align-items: center;
+  gap: 0.5em;
+  max-width: 30%;
+  background-color: rgba($colorBackgroundModal, 1);
+  border-radius: 1em;
+  padding: 0.25em 0.5em;
+  transition: filter 0.2s ease;
+
+  .icon {
+    height: 50%;
+  }
+
+  &:hover {
+    background-color: rgba($colorTitle, 1);
+    color: $colorTitle;
+    cursor: pointer;
+    filter: drop-shadow(-0.25em 0.4em 0.1675em rgba($colorTitle, 0.4));
+  }
+
+  &.active {
+    // background-color: rgba($colorTitle, 1);
+    background-color: rgba(#fff, 0.4);
+    backdrop-filter: blur(6px);
+    color: $colorTitle;
+    cursor: pointer;
+    filter: drop-shadow(-0.25em 0.4em 0.1675em rgba($colorTitle, 0.4));
+  }
+
+  &.active svg {
+    color: $colorLike;
+  }
+
+  &:hover svg {
+    color: $colorLike;
+  }
+}
+
+.page {
+  cursor: pointer;
+  height: 100%;
+  width: 3em;
+  aspect-ratio: 3 / 2;
+  @extend %flexRow;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border-radius: 0.5em;
+
+  &:hover {
+    background-color: rgba($colorPrimary, 1);
+    color: #fff;
+  }
+}
+
+ul {
+  list-style: none;
+}

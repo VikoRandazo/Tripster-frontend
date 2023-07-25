@@ -1,0 +1,29 @@
+@import "../../../styles/mixins.module.scss";
+@import "../../../styles/colorPallete.module.scss";
+@import "../../../styles/elements.module.scss";
+
+.Main {
+  height: 100%;
+  width: 100%;
+  @extend %flexCol;
+  flex: 1;
+  padding: 1em;
+  overflow: scroll;
+  overflow-x: hidden;
+  background-color: $colorBackgroundPage;
+  position: relative;
+  &::-webkit-scrollbar {
+    width: 0.5em;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 0.5em;
+    background-color: $colorLabel;
+    
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba($colorText, 0.4);
+    border-radius: 10px;
+  }
+}

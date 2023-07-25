@@ -1,0 +1,67 @@
+@import "../../styles/colorPallete.module.scss";
+@import "../../styles/elements.module.scss";
+@import "../../styles/keyFrames.module.scss";
+@import "../../styles/mixins.module.scss";
+
+.Vacation {
+  background-color: $colorCard;
+  height: 40vh;
+  width: 18vw;
+  border-radius: 0.5em;
+  overflow: hidden;
+  @extend %flexCol;
+  align-items: flex-start;
+  animation: display 1s ease;
+
+  & > .image {
+    align-items: flex-start;
+    height:60%;
+    width: 100%;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0% 100%);
+    border-radius: 0 0 1em 1em;
+    @extend %flexCol;
+    justify-content: flex-end;
+    overflow: hidden;
+
+    & > .title {
+      backdrop-filter: blur(2px);
+      background-color: rgba($colorLabel, 0.3);
+      padding-left: 0.5em;
+      width: 100%;
+      margin-bottom: 1em;
+    }
+  }
+
+  & > .header {
+    gap: 0.5em;
+    height: 10%;
+    @extend %flexRow;
+    justify-content: flex-start;
+    padding: 0.5em;
+  }
+
+  & > .main {
+    align-items: center;
+    @extend %flexCol;
+    height: 38%;
+    width: 100%;
+    padding: 0.5em;
+  }
+
+  & > .footer {
+    width: 100%;
+    height: 3.25em;
+    padding: 0.5em;
+    & > .actions {
+      width: 100%;
+      height: 100%;
+      @extend %flexRow;
+      gap: 0.5em;
+
+      & > button {
+        height: 100%;
+      }
+    }
+
+  }
+}

@@ -1,0 +1,16 @@
+@import "../styles/colorPallete.module.scss";
+@import "../styles/elements.module.scss";
+@import "../styles/keyFrames.module.scss";
+@import "../styles/mixins.module.scss";
+
+
+    .inputError {
+        animation:inputError 0.5s ease-in 0s 3;
+        border: 0.125em solid $colorWarning;
+    }
+
+    .error {
+        color: $colorWarning;
+        font-size: 0.875em;
+        margin-top: 0.25em;
+    }

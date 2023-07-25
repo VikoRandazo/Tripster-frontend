@@ -1,0 +1,82 @@
+@import "../../../styles/colorPallete.module.scss";
+@import "../../../styles/mixins.module.scss";
+@import "../../../styles/elements.module.scss";
+
+.Header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  width: 100%;
+  padding: 1em 2em;
+  @extend %flexRow;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 0 0.5em 0.125em rgba($colorBackgroundDark, 0.1);
+  height: 10%;
+  
+  & > .logo {
+    @extend %flexRow;
+    min-width: 10%;
+    height: 100%;
+    flex-grow: 1;
+
+    & > svg {
+      height: 100%;
+    }
+  }
+
+  & > .tabs {
+    @extend %flexRow;
+    gap: 1em;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    border-bottom: 0.125em solid transparent ;
+
+
+    & > .category {
+      cursor: pointer;
+      color: $colorText;
+      font-size: 1em;
+      font-weight: 500;
+    
+      &.active{
+        border-bottom: 0.125em solid $colorBorder ;
+      }
+    
+      &:hover {
+        color: $colorTitle;
+      }
+    }
+      }
+
+  & > .buttons {
+    @extend %flexRow;
+    gap: 1em;
+    min-width: 10%;
+
+    & > button.logoutBtn {
+      height: 3em;
+      max-width: 3em;
+      background-color: rgba($colorWarning, 0.05);
+      border: 0.125em solid rgba($colorWarning, 0.6);
+      @extend %flexRow;
+      align-items: center;
+
+      &:hover {
+        background-color: rgba($colorWarning, 1);
+
+        & > svg {
+          color: $colorBackgroundPage;
+        }
+      }
+
+      & > svg {
+        height: 1.75em;
+        width: 1.75em;
+        color: rgba($colorWarning, 0.7);
+      }
+    }
+  }
+}
