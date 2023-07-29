@@ -8,14 +8,13 @@
   height: 40vh;
   width: 18vw;
   border-radius: 0.5em;
-  overflow: hidden;
   @extend %flexCol;
   align-items: flex-start;
   animation: display 1s ease;
 
   & > .image {
     align-items: flex-start;
-    height:60%;
+    height: 60%;
     width: 100%;
     clip-path: polygon(0 0, 100% 0, 100% 90%, 0% 100%);
     border-radius: 0 0 1em 1em;
@@ -35,17 +34,28 @@
   & > .header {
     gap: 0.5em;
     height: 10%;
+    width: 100%;
     @extend %flexRow;
     justify-content: flex-start;
     padding: 0.5em;
   }
 
   & > .main {
-    align-items: center;
+    align-items: flex-start;
     @extend %flexCol;
     height: 38%;
     width: 100%;
     padding: 0.5em;
+
+    & > p {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      word-break: break-all;
+      @extend %flexRow;
+      justify-content: flex-start;
+      text-overflow: ellipsis;
+    }
   }
 
   & > .footer {
@@ -62,6 +72,5 @@
         height: 100%;
       }
     }
-
   }
 }

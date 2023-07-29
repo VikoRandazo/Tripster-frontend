@@ -6,7 +6,8 @@ import { VacationType } from "../../models/Vacation";
 import { User } from "../../models/User";
 import Modal from "../Modal/Modal";
 import EditVacationContent from "./EditVacationContent/EditVacationContent";
-import ConfirmContent from "../dialogs/ConfirmContent/ConfirmContent";
+import Prompt from "../CustomElements/Prompt/Prompt";
+import Alert from "../CustomElements/Alert/Alert";
 
 interface VacationProps {
   vacation: VacationType;
@@ -20,6 +21,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   const [isOpenEditVacation, setIsOpenEditVacation] = useState<boolean>(false);
   const [isOpenConfirmDelete, setIsOpenConfirmDelete] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
 
   const getLikes = async () => {
     try {
@@ -27,23 +29,28 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       if (response.data) {
         setLikes(response.data);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      setAlertMessage(error.message);
+      setIsActiveAlertModal(true);
     }
   };
 
   const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(user);
-
-    e.stopPropagation();
-    const response = await axios.post(`http://localhost:5000/api/like/${user.user_id}`, { vacation_id });
-
-    if (response.data.likeAdded) {
-      setLike(true);
-    } else {
-      setLike(false);
+    try {
+      console.log(user);
+      e.stopPropagation();
+      const response = await axios.post(`http://localhost:5000/api/like/${user.user_id}`, { vacation_id });
+      if (response.data.likeAdded) {
+        setLike(true);
+      } else {
+        setLike(false);
+      }
+    } catch (error: any) {
+      setAlertMessage(error.message);
+      setIsActiveAlertModal(true);
     }
   };
+  const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
 
   const DeleteVacation = async () => {
     setIsOpenConfirmDelete(true);
@@ -51,12 +58,16 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
 
   useEffect(() => {
     const handleDeleteVacation = async () => {
-      if (isConfirmed) {
-        const response = await axios.delete(`http://localhost:5000/api/vacations/${vacation_id}`);
-        console.log(response.data);
-      } else {
-        setIsConfirmed(false);
-      }
+      try {
+        if (isConfirmed) {
+          const response = await axios.delete(`http://localhost:5000/api/vacations/${vacation_id}`);
+          console.log(response.data);
+        } else {
+          setIsConfirmed(false);
+        }
+      } catch (error: any) {
+        setAlertMessage(error.message)
+        setIsActiveAlertModal(true)      }
     };
     handleDeleteVacation();
   }, [isConfirmed]);
@@ -69,22 +80,22 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     setIsOpenEditVacation(true);
   };
 
+
   const onClose = () => {
     if (isOpenEditVacation) {
       setIsOpenEditVacation(false);
     } else if (isOpenConfirmDelete) {
       setIsOpenConfirmDelete(false);
+    } else if (isActiveAlertModal) {
+      setIsActiveAlertModal(false);
     }
     setIsConfirmed(false);
   };
 
   const handleConfirmation = (confirmation: boolean) => {
-   setIsConfirmed(confirmation);
+    setIsConfirmed(confirmation);
   };
 
-  useEffect(() => {
-    console.log(isConfirmed);
-  }, [isConfirmed]);
 
   return (
     <div className={styles.Vacation}>
@@ -96,7 +107,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
 
       {isOpenConfirmDelete && (
         <Modal isActive={isOpenConfirmDelete} onClose={onClose} title={`Are you sure you want to delete ${destination}`}>
-          <ConfirmContent
+          <Prompt
             message={`Are you sure you want to delete ${destination}?`}
             onClose={onClose}
             data={destination}
@@ -104,6 +115,10 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
           />
         </Modal>
       )}
+
+      <Modal isActive={isActiveAlertModal} onClose={onClose} title={alertMessage}>
+        <Alert onClose={onClose} alertMessage={alertMessage} />
+      </Modal>
 
       <div className={styles.image} style={{ background: `url(${image_path})`, backgroundSize: `cover`, backgroundPosition: `bottom` }}>
         <div className={styles.title}>

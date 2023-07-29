@@ -15,14 +15,11 @@ const AdminReport: FC<AdminReportProps> = () => {
   ChartJS.defaults.layout.padding = 48;
   ChartJS.defaults.datasets.bar.categoryPercentage = 0.4;
 
-  console.log(ChartJS.defaults.aspectRatio);
-
   const [userData, setUserData] = useState<any[]>([]);
 
   const getData = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/like/all`);
-      console.log(response.data);
       setUserData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -35,21 +32,19 @@ const AdminReport: FC<AdminReportProps> = () => {
 
   const vacationLikesCounts = userData.reduce((counts, vacation) => {
     const { destination } = vacation;
-    console.log(counts[destination]);
-    
+
     counts[destination] = (counts[destination] || 0) + 1;
     return counts;
   }, {});
 
   const uniqueUserData = userData.filter((vacation) => vacationLikesCounts[vacation.destination] === 1);
 
-  console.log("Unique User Data:", uniqueUserData);
-
   const likesCounts = Object.values(vacationLikesCounts);
-  // 
-  const vacationsDestination = userData.map((vacation: VacationType) => {return (vacation.destination)});
-  console.log(vacationsDestination);
-  
+  //
+  const vacationsDestination = userData.map((vacation: VacationType) => {
+    return vacation.destination;
+  });
+
   const chartData = {
     type: `bar`,
     labels: vacationsDestination,
@@ -80,17 +75,17 @@ const AdminReport: FC<AdminReportProps> = () => {
   };
 
   const exportCSV = async () => {
-    const response = await axios.get(`http://localhost:5000/api/vacations/csv/export`)
-    console.log(response);
-    
-  }
+    const response = await axios.get(`http://localhost:5000/api/vacations/csv/export`);
+  };
 
   return (
     <div className={styles.AdminReport}>
       <div className={styles.header}>
         <div className={styles.filterBar}>
           <h2>Admin Reports Dashboard</h2>
-          <button className={styles.secondary} onClick={exportCSV}><FaFileCsv /> Export CSV</button>
+          <button className={styles.secondary} onClick={exportCSV}>
+            <FaFileCsv /> Export CSV
+          </button>
         </div>
       </div>
       <div className={styles.brief}></div>

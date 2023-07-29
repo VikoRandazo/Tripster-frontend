@@ -12,18 +12,4 @@
   overflow-x: hidden;
   background-color: $colorBackgroundPage;
   position: relative;
-  &::-webkit-scrollbar {
-    width: 0.5em;
-  }
-
-  &::-webkit-scrollbar-track {
-    border-radius: 0.5em;
-    background-color: $colorLabel;
-    
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba($colorText, 0.4);
-    border-radius: 10px;
-  }
 }

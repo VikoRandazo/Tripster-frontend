@@ -20,10 +20,6 @@ const Layout: FC<LayoutProps> = () => {
 
   useEffect(() => {
     getUser();
-    if (user) {
-      console.log(user);
-      
-    }
   }, []);
 
   return (

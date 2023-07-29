@@ -4,7 +4,7 @@ import { VacationType, vacationInitState } from "../../../models/Vacation";
 import axios from "axios";
 import { FaPencilAlt, FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import validation from "../../../validations/VacationValidation";
+import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 
@@ -16,47 +16,18 @@ interface EditVacationContentProps {
 const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }) => {
   const { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
   const [updatedVacation, setUpdatedVacation] = useState<VacationType>(vacation);
-  const [inputValue, setinputValue] = useState<string>();
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
-
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    const { name, value } = e.currentTarget;
-
-    setUpdatedVacation((prevstate) => ({
-      ...prevstate,
-      [name]: value,
-    }));
-  };
-
-  const updateVacation = async () => {
-    console.log(updatedVacation);
-
-    try {
-      const response = await axios.put(`http://localhost:5000/api/vacations/${vacation_id}`, updatedVacation);
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const setChangeImgMode = () => {
     setChangeImgState(!changeImgState);
   };
-  const [isValidForm, setIsValidForm] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-
-  useEffect(() => {
-    const validateForm = async () => {
-      const isValid = await validation.isValid(updatedVacation);
-      // setIsValidForm(isValid);
-    };
-    validateForm();
-  }, [updatedVacation]);
 
   const { handleChange, values, handleSubmit, errors, touched, handleBlur, isSubmitting } = useFormik({
     initialValues: updatedVacation,
-    validationSchema: validation,
+    validationSchema: vacationSchema,
     onSubmit: async (values, actions) => {
+  
       setSubmitting(true);
       try {
         const response = await axios.put(`http://localhost:5000/api/vacations/${vacation_id}`, values);
@@ -156,6 +127,7 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                     required
                     onBlur={handleBlur}
                     className={errors.start_date && touched.start_date ? styles.inputError : ""}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   {errors.start_date && touched.start_date && <p className={styles.error}>{errors.start_date}</p>}
                 </div>
@@ -171,6 +143,7 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                     value={values.end_date}
                     required
                     onBlur={handleBlur}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   {errors.end_date && touched.end_date && <p className={styles.error}>{errors.end_date}</p>}
                 </div>

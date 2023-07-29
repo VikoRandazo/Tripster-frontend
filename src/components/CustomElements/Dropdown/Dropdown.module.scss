@@ -1,0 +1,57 @@
+@import "../../../styles/colorPallete.module.scss";
+@import "../../../styles/elements.module.scss";
+@import "../../../styles/keyFrames.module.scss";
+@import "../../../styles/mixins.module.scss";
+.Dropdown {
+  max-width: 100%;
+  height: 100%;
+
+  & > .dropdown {
+    width: 100%;
+    @extend %flexCol;
+    align-items: center;
+    background-color: $colorBackgroundPage;
+    border-radius: 0 0 1em 1em;
+    overflow: hidden;
+    & > .option {
+      width: 100%;
+      @extend %flexRow;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5em;
+
+      & > .item {
+        flex: 0 0 1;
+        height: 100%;
+        width: auto;
+        white-space: nowrap;
+        text-align: right;
+
+        & > label {
+          height: 100%;
+          cursor: pointer;
+          color: $colorActive;
+        }
+      }
+
+      &:hover {
+        transition: all 0.3s ease;
+        background-color: $colorPrimary;
+      }
+
+      &:hover > .item > label {
+        color: #fff;
+      }
+
+      &.isActive {
+        background-color: $colorPrimary;
+        transition: all 0.3s ease;
+        filter: brightness(1.1);
+
+        & > .item > label {
+          color: #fff;
+        }
+      }
+    }
+  }
+}

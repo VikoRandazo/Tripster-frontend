@@ -125,7 +125,7 @@ input {
   outline: none;
   border: 0.125em solid transparent;
   font-size: 0.875em;
-  background-color: rgba($colorElement, 0.3);
+  background-color: rgba($colorElement, 0.2);
   color: rgba($colorText, 1);
   transition: all 0.2s ease;
   width: 100%;
@@ -253,4 +253,19 @@ a {
 
 ul {
   list-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 0.5em;
+  background-color: $colorLabel;
+  
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba($colorText, 0.4);
+  border-radius: 10px;
 }

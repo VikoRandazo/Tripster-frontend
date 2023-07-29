@@ -1,16 +1,16 @@
 import React, { FC, useEffect, useState } from "react";
-import styles from "./ConfirmContent.module.scss";
+import styles from "./Prompt.module.scss";
 
-interface ConfirmContentProps {
+interface PromptProps {
   message: string;
   onClose: () => void;
   onConfirm: (confirmation: boolean) => void;
   data: any;
 }
 
-const ConfirmContent: FC<ConfirmContentProps> = ({ message, onClose, onConfirm, data }) => {
+const Prompt: FC<PromptProps> = ({ message, onClose, onConfirm, data }) => {
   return (
-    <div className={styles.ConfirmContent}>
+    <div className={styles.Prompt}>
       <div className={styles.title}>
         <h2>Confirmation</h2>
       </div>
@@ -28,4 +28,4 @@ const ConfirmContent: FC<ConfirmContentProps> = ({ message, onClose, onConfirm, 
   );
 };
 
-export default ConfirmContent;
+export default Prompt;

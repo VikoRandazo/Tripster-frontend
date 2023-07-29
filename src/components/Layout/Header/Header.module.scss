@@ -2,6 +2,9 @@
 @import "../../../styles/mixins.module.scss";
 @import "../../../styles/elements.module.scss";
 
+.hidden {
+  display: none;
+}
 .Header {
   position: sticky;
   top: 0;
@@ -14,6 +17,7 @@
   justify-content: space-between;
   box-shadow: 0 0 0.5em 0.125em rgba($colorBackgroundDark, 0.1);
   height: 10%;
+
   
   & > .logo {
     @extend %flexRow;

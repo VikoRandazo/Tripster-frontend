@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { VacationType, vacationInitState } from "../../../models/Vacation";
-import validation from "../../../validations/VacationValidation";
+import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 
@@ -13,62 +13,16 @@ interface CreateVacationContentProps {
 }
 
 const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
-  const [inputValue, setinputValue] = useState<string>();
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
-  const [newVacation, setNewVacation] = useState<VacationType>({
-    destination: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    price: 0,
-    image_path: "",
-  });
-
-  const [isValidForm, setIsValidForm] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-
-  // const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   const { name, value } = e.currentTarget;
-
-  //   setNewVacation((prevstate) => ({
-  //     ...prevstate,
-  //     [name]: value,
-  //   }));
-  // };
 
   const setChangeImgMode = () => {
     setChangeImgState(!changeImgState);
   };
 
-  // const postNewVacation = async (values:VacationType) => {
-  // if (isValidForm) {
-  //   try {
-  //     const response = await axios.post(`http://localhost:5000/api/vacations/new`, values);
-  //     // const response = await axios.post(`http://localhost:5000/api/vacations/new`, newVacation);
-  //     console.log(response);
-  //     setTimeout(() => {
-
-  //       onClose();
-  //     }, 3000);
-  //   } catch (error) {
-  //     console.error("Error posting new vacation:", error);
-  //   }
-  // } else {
-  //   return;
-  // }
-  // };
-
-  useEffect(() => {
-    const validateForm = async () => {
-      const isValid = await validation.isValid(newVacation);
-      setIsValidForm(isValid);
-    };
-    validateForm();
-  }, [newVacation]);
-
   const { handleChange, values, handleSubmit, errors, touched, handleBlur, isSubmitting } = useFormik({
     initialValues: vacationInitState,
-    validationSchema: validation,
+    validationSchema: vacationSchema,
     onSubmit: async (values, actions) => {
       setSubmitting(true);
       try {
@@ -85,8 +39,8 @@ const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
     },
   });
   useEffect(() => {
-    console.log(`isSubmitting:`, isSubmitting);
-  }, [isSubmitting]);
+    console.log(values);
+  }, [values]);
 
   return (
     <form onSubmit={handleSubmit} className={styles.CreateVacationContent}>
@@ -167,6 +121,7 @@ const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
                     id="vecationStartDate"
                     onChange={handleChange}
                     value={values.start_date}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   {errors.start_date && touched.start_date && <p className={styles.error}>{errors.start_date}</p>}
                 </div>
@@ -182,6 +137,7 @@ const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     className={errors.end_date && touched.end_date ? styles.inputError : ""}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                   {errors.end_date && touched.end_date && <p className={styles.error}>{errors.end_date}</p>}
                 </div>

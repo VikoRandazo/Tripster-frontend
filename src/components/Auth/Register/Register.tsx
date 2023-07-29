@@ -6,18 +6,21 @@ import { useDispatch } from "react-redux";
 import { User } from "../../../models/User";
 import axios from "axios";
 import { authActions } from "../../../slices/authSlice";
-import validation from "../../../validations/AuthValidation";
+import { RegisterSchema } from "../../../validations/AuthValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
+import Modal from "../../Modal/Modal";
+import Alert from "../../CustomElements/Alert/Alert";
 
 interface RegisterProps {}
 
 const Register: FC<RegisterProps> = () => {
-  // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // states
+
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
   const [userData, setUserData] = useState<User>({
     firstName: "",
     lastName: "",
@@ -30,6 +33,8 @@ const Register: FC<RegisterProps> = () => {
   const handleNavigate = () => {
     navigate("/login");
   };
+
+  
 
   const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserData((prevState) => {
@@ -49,9 +54,9 @@ const Register: FC<RegisterProps> = () => {
   //   dispatch(authActions.setUser(userData));
   // };
 
-  const { handleChange, values, handleSubmit, errors, touched, handleBlur, isSubmitting } = useFormik({
+  const { handleChange, values, handleSubmit, errors, touched, handleBlur } = useFormik({
     initialValues: userData,
-    validationSchema: validation,
+    validationSchema: RegisterSchema,
     onSubmit: async (values, actions) => {
       setSubmitting(true);
       setTimeout(async () => {
@@ -62,8 +67,9 @@ const Register: FC<RegisterProps> = () => {
             navigate("/vacations");
             dispatch(authActions.setUser(userData));
           }
-        } catch (error) {
-          console.error(error);
+        } catch (error:any) {
+          setAlertMessage(error.message);
+          setIsActiveAlertModal(true);
         } finally {
           setSubmitting(false);
         }
@@ -71,12 +77,15 @@ const Register: FC<RegisterProps> = () => {
     },
   });
 
-  useEffect(() => {
-    console.log(`isSubmitting:`, isSubmitting);
-  }, [isSubmitting]);
+  const onClose = () => {
+    setIsActiveAlertModal(false)
+  }
 
   return (
     <div className={styles.Register}>
+      <Modal isActive={isActiveAlertModal} onClose={onClose} title={alertMessage}>
+        <Alert alertMessage={alertMessage} onClose={onClose} />
+      </Modal>
       <div className={styles.container}>
         <div className={styles.svg}>
           <Svg />
