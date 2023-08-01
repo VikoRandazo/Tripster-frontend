@@ -1,7 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Pagination.module.scss";
-import { VacationType } from "../../../models/Vacation";
-import { current } from "@reduxjs/toolkit";
 
 interface PaginationProps {
   perPage: number;
@@ -17,15 +15,10 @@ const Pagination: FC<PaginationProps> = ({ data, perPage, setData }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [page, setPage] = useState<number>(currentPage);
 
-  // lastPage
   useEffect(() => {
     setLastPage(pages.length);
-    if (array) {
-      console.log(array);
-    }
   }, [array, pages]);
 
-  // prevPage
   const goToPrevPage = () => {
     if (page > 1) {
       setPage((prevstate) => prevstate - 1);
@@ -51,6 +44,9 @@ const Pagination: FC<PaginationProps> = ({ data, perPage, setData }) => {
     setData(dataInPage);
   }, [page, perPage]);
 
+
+
+
   const fillPagesArray = () => {
     if (array.length > 0) {
       const totalPages = Math.ceil(data.length / perPage);
@@ -64,19 +60,26 @@ const Pagination: FC<PaginationProps> = ({ data, perPage, setData }) => {
     }
   }, [data, perPage]);
 
+  useEffect(() => {
+    setCurrentPage(page)
+  }, [page, setData]);
+
   return (
     <div className={styles.Pagination}>
       <div className={styles.page}>
-        <button onClick={goToPrevPage} disabled={page === 1}>
-          Previous
+        <button className={styles.paginationBtn} onClick={goToPrevPage} disabled={page === 1}>
+          {"<"}
         </button>
-        {pages.map((page, index) => (
-          <button key={index + 1} onClick={setCustomPage} className={index + 1 === page ? styles.active : ""}>
-            {page}
+        {pages.map((pageNumber, index) => (
+          <button
+            key={index + 1}
+            onClick={setCustomPage}
+            className={index + 1 === currentPage ? `${styles.paginationBtn} ${styles.selected}` : `${styles.paginationBtn}`}>
+            {pageNumber}
           </button>
         ))}
-        <button onClick={goToNextPage} disabled={page === lastPage}>
-          Next
+        <button className={styles.paginationBtn} onClick={goToNextPage} disabled={page === lastPage}>
+          {">"}
         </button>
       </div>
     </div>

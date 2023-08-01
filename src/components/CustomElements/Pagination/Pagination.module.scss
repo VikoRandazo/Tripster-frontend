@@ -2,16 +2,35 @@
 @import "../../../styles/elements.module.scss";
 @import "../../../styles/mixins.module.scss";
 
-
 .Pagination {
-   width: 100%;
+  width: 30%;
+  height: 100%;
+  @extend %flexRow;
+  background-color: #fff;
+  padding: 1em 0;
+  border-radius: 2em;
+  box-shadow: 0 0.5em 0.25em rgba($colorElement, 0.4);
+
+
+  & > .page {
     height: 100%;
+    width: 100%;
     @extend %flexRow;
 
-    & > .page {
-        background-color: aqua;
-        @extend %flexRow;
-
+    & > .paginationBtn {
+      max-width: 2em;
+      max-height: 2em;
+      @extend %flexRow;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50em;
+      font-size: 1em;
+      background-color: transparent;
+      
+      &.selected {
+        background-color: $colorPrimary;
+        color: #fff;
+      }
     }
-
+  }
 }

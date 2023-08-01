@@ -129,6 +129,7 @@ const Vacations: FC<VacationsProps> = () => {
 
   useEffect(() => {}, []);
   const [slicedData, setSlicedData] = useState<VacationType[]>([]);
+
   const handlePaginationData = (newSlicedData: any[]) => {
     setSlicedData(newSlicedData);
   };
@@ -136,6 +137,10 @@ const Vacations: FC<VacationsProps> = () => {
   useEffect(() => {
     filterResults();
   }, [selectedOptions]);
+
+  useEffect(() => {
+    console.log(slicedData);
+  }, [slicedData]);
 
   return (
     <div className={styles.Vacations}>
@@ -170,7 +175,7 @@ const Vacations: FC<VacationsProps> = () => {
         </div>
       </div>
       <div className={styles.main}>
-        {filterData().length > 0 ? (
+        {filterResults().length > 0 ? (
           <div className={styles.vacations}>
             {slicedData.map((vacation: VacationType) => {
               const startDateFormat = new Date(vacation.start_date).toISOString().split("T")[0];

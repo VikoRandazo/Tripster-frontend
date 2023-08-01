@@ -2,6 +2,7 @@
 @import "../../styles/elements.module.scss";
 @import "../../styles/keyFrames.module.scss";
 @import "../../styles/mixins.module.scss";
+@import "../../styles/breakpoints.module.scss";
 
 .Vacation {
   background-color: $colorCard;
@@ -11,12 +12,21 @@
   @extend %flexCol;
   align-items: flex-start;
   animation: display 1s ease;
+  @include respond("tablet") {
+    min-width: calc(50% - 1em);
+    min-height: 50vh;
+  }
+
+  @include respond("phone") {
+    min-width: calc(100vw - 1em);
+    min-height: 50vh;
+  }
+
 
   & > .image {
     align-items: flex-start;
     height: 60%;
     width: 100%;
-    clip-path: polygon(0 0, 100% 0, 100% 90%, 0% 100%);
     border-radius: 0 0 1em 1em;
     @extend %flexCol;
     justify-content: flex-end;
@@ -51,7 +61,7 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      word-break: break-all;
+      word-break: break-word;
       @extend %flexRow;
       justify-content: flex-start;
       text-overflow: ellipsis;

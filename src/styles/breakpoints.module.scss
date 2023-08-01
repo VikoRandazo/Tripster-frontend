@@ -1,0 +1,17 @@
+$breakpoints: (
+  "phone": 675px,
+  "tablet": 900px,
+  "desktop": 1536px,
+);
+
+@mixin respond($breakpoint) {
+  $breakpoint-value: map-get($breakpoints, $breakpoint);
+
+  @if $breakpoint-value {
+    @media (max-width: $breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @warn "No such breakpoint exists: #{$breakpoint}.";
+  }
+}

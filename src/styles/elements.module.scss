@@ -234,22 +234,6 @@ a {
   }
 }
 
-.page {
-  cursor: pointer;
-  height: 100%;
-  width: 3em;
-  aspect-ratio: 3 / 2;
-  @extend %flexRow;
-  align-items: center;
-  justify-content: center;
-  background-color: #fff;
-  border-radius: 0.5em;
-
-  &:hover {
-    background-color: rgba($colorPrimary, 1);
-    color: #fff;
-  }
-}
 
 ul {
   list-style: none;
