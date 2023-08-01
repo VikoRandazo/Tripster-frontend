@@ -92,14 +92,15 @@ const Login: FC<LoginProps> = () => {
             }
           }
         } catch (error: any) {
-          if (error.status === 401) {
-            setAlertMessage("Invalid email or password");
-          } else {
-            setAlertMessage(error.message);
+          console.log(error.response.data.error);
+          if (error.response.status === 401) {
+            setAlertMessage(error.response.data.error);
           }
+    
           setIsActiveAlertModal(true);
         } finally {
           setSubmitting(false);
+          
         }
       }, 3000);
     },

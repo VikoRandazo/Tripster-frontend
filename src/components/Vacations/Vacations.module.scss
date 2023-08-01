@@ -98,6 +98,10 @@
       & > .paginateVacations {
         width: 100%;
         background-color: antiquewhite;
+        @extend %flexRow;
+        align-items:center ;
+        justify-content: center;
+        
       }
 
     }

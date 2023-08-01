@@ -68,7 +68,13 @@ const Register: FC<RegisterProps> = () => {
             dispatch(authActions.setUser(userData));
           }
         } catch (error:any) {
-          setAlertMessage(error.message);
+          if (error.response.status === 409) {
+            setAlertMessage(error.response.data.message);
+          }
+          else {
+            setAlertMessage(error.message);
+
+          }
           setIsActiveAlertModal(true);
         } finally {
           setSubmitting(false);
@@ -107,7 +113,7 @@ const Register: FC<RegisterProps> = () => {
                 type="text"
                 name="firstName"
                 placeholder="First name"
-                required
+                
                 className={errors.firstName && touched.firstName ? styles.inputError : ``}
               />
               {errors.firstName && touched.firstName && <p className={styles.error}>{errors.firstName}</p>}
@@ -122,7 +128,7 @@ const Register: FC<RegisterProps> = () => {
                 type="text"
                 name="lastName"
                 placeholder="Last name"
-                required
+                
                 className={errors.lastName && touched.lastName ? styles.inputError : ``}
               />
               {errors.lastName && touched.lastName && <p className={styles.error}>{errors.lastName}</p>}
@@ -137,7 +143,7 @@ const Register: FC<RegisterProps> = () => {
                 type="email"
                 name="email"
                 placeholder="user@example.com"
-                required
+                
                 className={errors.email && touched.email ? styles.inputError : ``}
               />
               {errors.email && touched.email && <p className={styles.error}>{errors.email}</p>}
@@ -152,7 +158,7 @@ const Register: FC<RegisterProps> = () => {
                 type="password"
                 name="password"
                 placeholder="Password"
-                required
+                
                 className={errors.password && touched.password ? styles.inputError : ``}
               />
               {errors.password && touched.password && <p className={styles.error}>{errors.password}</p>}

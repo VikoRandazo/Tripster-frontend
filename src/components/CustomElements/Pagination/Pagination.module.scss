@@ -1,1 +1,17 @@
-.Pagination {}
+@import "../../../styles/colorPallete.module.scss";
+@import "../../../styles/elements.module.scss";
+@import "../../../styles/mixins.module.scss";
+
+
+.Pagination {
+   width: 100%;
+    height: 100%;
+    @extend %flexRow;
+
+    & > .page {
+        background-color: aqua;
+        @extend %flexRow;
+
+    }
+
+}

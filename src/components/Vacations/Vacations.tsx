@@ -12,7 +12,6 @@ import { Follower } from "../../models/Follower";
 import Alert from "../CustomElements/Alert/Alert";
 import Modal from "../Modal/Modal";
 import Pagination from "../CustomElements/Pagination/Pagination";
-import { current } from "@reduxjs/toolkit";
 
 interface VacationsProps {}
 
@@ -45,6 +44,7 @@ const Vacations: FC<VacationsProps> = () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/vacations/all`);
       const data = response.data;
+
       setVacations(data);
     } catch (error: any) {
       setAlertMessage(error.message);
@@ -57,6 +57,8 @@ const Vacations: FC<VacationsProps> = () => {
     getUser();
     getVacations();
   }, []);
+
+  useEffect(() => {}, [vacations]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
     const targetElement = e.currentTarget;
@@ -74,12 +76,6 @@ const Vacations: FC<VacationsProps> = () => {
     }
   };
 
-  const [perPage, setPerPage] = useState<number>(10);
-  const [currentPage, setCurrentPage] = useState<number>(0);
-
-  const [pages, setPages] = useState<number>(1);
-
-  const [lastPage, setLastPage] = useState<number>(1);
   const [isActiveDropdown, setIsActiveDropdown] = useState<boolean>(false);
   const [selectedOptions, setSelectedoptions] = useState<string[]>([]);
 
@@ -88,34 +84,25 @@ const Vacations: FC<VacationsProps> = () => {
   };
 
   const getLikes = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/like/all`);
-      setLikes(response.data);
-    } catch (error: any) {
-      setAlertMessage(error.message);
-      setIsActiveAlertModal(true);
+    if (!user.isAdmin) {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/like/all`);
+
+        setLikes(response.data);
+      } catch (error: any) {
+        console.log(error);
+
+        setAlertMessage(error.response.data.message);
+        setIsActiveAlertModal(true);
+      }
     }
   };
 
   useEffect(() => {
-    if (!user.isAdmin) {
-      getLikes();
-    }
-  }, [user.isAdmin]);
+    getLikes();
+  }, [user]);
 
-  // useEffect(() => {
-  //   setPages(vacations.map((vacation:VacationType, index) => index + 1 ));
-
-  // }, [vacations]);
-
-  useEffect(() => {
-    if (vacations) {
-      setPages(Math.round(vacations.length / perPage));
-      setLastPage(vacations.length);
-    }
-  }, [vacations]);
-
-  const filterResults: () => any = () => {
+  const filterResults: () => VacationType[] = () => {
     return [...filterData()].filter((vacation: VacationType) => {
       const isFollowing = likes.some((follow: Follower) => follow.vacation_id === vacation.vacation_id);
       const upComingVacations = new Date(vacation.start_date) > new Date();
@@ -141,10 +128,13 @@ const Vacations: FC<VacationsProps> = () => {
   };
 
   useEffect(() => {}, []);
+  const [slicedData, setSlicedData] = useState<VacationType[]>([]);
+  const handlePaginationData = (newSlicedData: any[]) => {
+    setSlicedData(newSlicedData);
+  };
 
   useEffect(() => {
     filterResults();
-    console.log(selectedOptions);
   }, [selectedOptions]);
 
   return (
@@ -180,32 +170,25 @@ const Vacations: FC<VacationsProps> = () => {
         </div>
       </div>
       <div className={styles.main}>
-        {filterResults().length > 0 ? (
+        {filterData().length > 0 ? (
           <div className={styles.vacations}>
-            {filterResults().map((vacation: VacationType) => {
-              const startDateFormat = new Date(vacation.start_date).toISOString().split(`T`)[0];
-              const endDateFormat = new Date(vacation.end_date).toISOString().split(`T`)[0];
+            {slicedData.map((vacation: VacationType) => {
+              const startDateFormat = new Date(vacation.start_date).toISOString().split("T")[0];
+              const endDateFormat = new Date(vacation.end_date).toISOString().split("T")[0];
               return (
                 <Vacation
                   key={vacation.vacation_id}
-                  vacation={{ ...vacation, start_date: startDateFormat, end_date: endDateFormat }}
+                  vacation={{
+                    ...vacation,
+                    start_date: startDateFormat,
+                    end_date: endDateFormat,
+                  }}
                   user={user}
                 />
               );
             })}
             <div className={styles.paginateVacations}>
-              <Pagination
-                data={vacations}
-                pages={pages}
-                currentPage={0}
-                currentPageData = {vacations[currentPage]}
-                lastPage={lastPage}
-                perPage={perPage}
-                setCurrentPage={(currentPage) => {
-                  return currentPage + 1;
-                }}
-                setData={[]}
-              />
+              <Pagination perPage={10} data={filterResults()} setData={handlePaginationData} />
             </div>
           </div>
         ) : (

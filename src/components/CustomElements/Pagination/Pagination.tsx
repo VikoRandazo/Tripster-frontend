@@ -1,57 +1,83 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Pagination.module.scss";
 import { VacationType } from "../../../models/Vacation";
+import { current } from "@reduxjs/toolkit";
 
 interface PaginationProps {
-  currentPage: number;
-  lastPage: number;
   perPage: number;
-  pages: number;
   data: any[];
-  setData:any[]
-  currentPageData?:VacationType[];
-
-  setCurrentPage: (page: number) => void;
+  setData: (newDataArray: any[][]) => void;
 }
 
-const Pagination: FC<PaginationProps> = ({ data, currentPage, lastPage, perPage, setCurrentPage, pages }) => {
+const Pagination: FC<PaginationProps> = ({ data, perPage, setData }) => {
   const [array, setArray] = useState<any[][]>([]);
+  const [pages, setPages] = useState<number[]>([]);
+
+  const [lastPage, setLastPage] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(currentPage);
+
+  // lastPage
+  useEffect(() => {
+    setLastPage(pages.length);
+    if (array) {
+      console.log(array);
+    }
+  }, [array, pages]);
+
+  // prevPage
+  const goToPrevPage = () => {
+    if (page > 1) {
+      setPage((prevstate) => prevstate - 1);
+    } else {
+      return;
+    }
+  };
+
+  const setCustomPage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { innerText } = e.currentTarget;
+    setPage(Number(innerText));
+  };
+
+  const goToNextPage = () => {
+    setPage((prevstate) => prevstate + 1);
+  };
 
   useEffect(() => {
-    // Create an array with the number of cells as the maxLength prop
-    const newPages = Array.from({ length: pages }, (_, index) => index + 1);
-    setArray(newPages.map(page => data.slice((page - 1) * perPage, page * perPage)));
-    
-  }, [data, pages, perPage]);
+    const startIndex = (page - 1) * perPage;
+    const endIndex = Math.min(startIndex + perPage, data.length);
+    const dataInPage = data.slice(startIndex, endIndex);
+    setArray(dataInPage);
+    setData(dataInPage);
+  }, [page, perPage]);
+
+  const fillPagesArray = () => {
+    if (array.length > 0) {
+      const totalPages = Math.ceil(data.length / perPage);
+      setPages(new Array(totalPages).fill(0).map((_, index) => index + 1));
+    }
+  };
 
   useEffect(() => {
-console.log(array);
-
-  },[array])
+    if (array.length > 0) {
+      fillPagesArray();
+    }
+  }, [data, perPage]);
 
   return (
     <div className={styles.Pagination}>
       <div className={styles.page}>
-        {/* Render the Previous button */}
-        <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+        <button onClick={goToPrevPage} disabled={page === 1}>
           Previous
         </button>
-        {/* Render the pages */}
-        {array.map((pageNumber, index) => (
-          <button key={index + 1} onClick={() => setCurrentPage(index + 1)} className={index + 1 === currentPage ? styles.active : ""}>
-            {index + 1}
+        {pages.map((page, index) => (
+          <button key={index + 1} onClick={setCustomPage} className={index + 1 === page ? styles.active : ""}>
+            {page}
           </button>
         ))}
-        {/* Render the Next button */}
-        <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === lastPage}>
+        <button onClick={goToNextPage} disabled={page === lastPage}>
           Next
         </button>
-      </div>
-      {/* Render the paged data */}
-      <div>
-        {array[currentPage - 1]?.map((vacation, index) => (
-          <div key={index}>{/* Render your vacation data here */}</div>
-        ))}
       </div>
     </div>
   );

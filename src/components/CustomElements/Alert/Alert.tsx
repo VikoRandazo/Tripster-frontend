@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import styles from "./Alert.module.scss";
-import { HiHandThumbDown } from "react-icons/hi2";
+import { HiExclamationTriangle } from "react-icons/hi2";
 
 interface AlertProps {
   alertMessage: string;
@@ -12,7 +12,7 @@ const Alert: FC<AlertProps> = ({ alertMessage, onClose }) => {
     <div className={styles.Alert}>
       <div className={styles.title}>
         <div className={styles.creative}>
-          <HiHandThumbDown />
+          <HiExclamationTriangle />
         </div>
         <div className={styles.message}>
           <span>{alertMessage} </span>
