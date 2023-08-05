@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
+import instance from "../../../api/AxiosInstance";
 
 interface EditVacationContentProps {
   vacation: VacationType;
@@ -27,10 +28,9 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
     initialValues: updatedVacation,
     validationSchema: vacationSchema,
     onSubmit: async (values, actions) => {
-  
       setSubmitting(true);
       try {
-        const response = await axios.put(`http://localhost:5000/api/vacations/${vacation_id}`, values);
+        const response = await instance.put(`/vacations/${vacation_id}`);
         console.log(response);
       } catch (error) {
         console.error("Error posting new vacation:", error);

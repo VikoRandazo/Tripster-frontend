@@ -4,28 +4,21 @@ import Main from "./Main/Main";
 import Header from "./Header/Header";
 import { User } from "../../models/User";
 import jwtDecode from "jwt-decode";
+import { useSelector } from "react-redux";
+import { StoreRootTypes } from "../../store";
 
 interface LayoutProps {}
 
 const Layout: FC<LayoutProps> = () => {
-  const [user, setUser] = useState<User>({ firstName: "", lastName: "", email: "", password: "", isAdmin: 0 });
-  const getUser = async () => {
-    const token = localStorage.getItem(`token`);
-    if (token) {
-      const decode: User = jwtDecode(token);
-      setUser(decode);
-    }
-  };
-  const { firstName, lastName, email, password, isAdmin } = user;
-
-  useEffect(() => {
-    getUser();
-  }, []);
+  const user = useSelector((state: StoreRootTypes) => state.auth.setUser);
+  const token = useSelector((state: StoreRootTypes) => state.auth.setToken);
 
   return (
     <div className={styles.Layout}>
-      {isAdmin ? <Header /> : null}
-      <div className={styles.main} style={isAdmin ? { height: `90%` } : { height: `100%` }}>
+      <div className={token ? styles.header :  `${styles.header} ${styles.hidden}`}>
+        <Header />
+      </div>
+      <div className={styles.main}>
         <Main />
       </div>
     </div>

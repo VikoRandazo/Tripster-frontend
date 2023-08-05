@@ -1,24 +1,22 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Vacations.module.scss";
-import axios from "axios";
-import { VacationType } from "../../models/Vacation";
+import { VacationType, vacationStatus } from "../../models/Vacation";
 import Vacation from "../Vacation/Vacation";
 import { User } from "../../models/User";
 import jwtDecode from "jwt-decode";
 import Loader from "../Loader/Loader";
-import Dropdown from "../CustomElements/Dropdown/Dropdown";
-import { HiAdjustmentsHorizontal } from "react-icons/hi2";
-import { Follower } from "../../models/Follower";
 import Alert from "../CustomElements/Alert/Alert";
 import Modal from "../Modal/Modal";
 import Pagination from "../CustomElements/Pagination/Pagination";
+import instance from "../../api/AxiosInstance";
+import { FaTrashAlt } from "react-icons/fa";
+import { vacationSearchSchema } from "../../validations/VacationValidation";
+import { useFormik } from "formik";
 
 interface VacationsProps {}
 
 const Vacations: FC<VacationsProps> = () => {
-  const [inputValue, setinputValue] = useState<string>("");
   const [alertMessage, setAlertMessage] = useState<string>("");
-
   const [vacations, setVacations] = useState<VacationType[]>([]);
   const [likes, setLikes] = useState<[]>([]);
   const [user, setUser] = useState<User>({
@@ -29,8 +27,7 @@ const Vacations: FC<VacationsProps> = () => {
     password: "",
     isAdmin: 0,
   });
-
-  const filterBy = [`Followed Vacations`, `Ongoing Vacations`, `Upcoming Vacations`];
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const getUser = async () => {
     const token = localStorage.getItem(`token`);
@@ -42,9 +39,8 @@ const Vacations: FC<VacationsProps> = () => {
 
   const getVacations = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/vacations/all`);
+      const response = await instance.get(`/vacations/all`);
       const data = response.data;
-
       setVacations(data);
     } catch (error: any) {
       setAlertMessage(error.message);
@@ -58,35 +54,10 @@ const Vacations: FC<VacationsProps> = () => {
     getVacations();
   }, []);
 
-  useEffect(() => {}, [vacations]);
-
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>) => {
-    const targetElement = e.currentTarget;
-    setinputValue(targetElement.value);
-  };
-
-  const filterData = () => {
-    const requiredMatch = inputValue.toLowerCase();
-    if (inputValue) {
-      return [...vacations].filter((vacation: VacationType) => vacation.destination.toLowerCase().includes(requiredMatch));
-    } else {
-      return [...vacations].sort((a: VacationType, b: VacationType) => {
-        return String(a.start_date).localeCompare(String(b.start_date));
-      });
-    }
-  };
-
-  const [isActiveDropdown, setIsActiveDropdown] = useState<boolean>(false);
-  const [selectedOptions, setSelectedoptions] = useState<string[]>([]);
-
-  const toggleDropdown = () => {
-    setIsActiveDropdown((prevstate) => !prevstate);
-  };
-
   const getLikes = async () => {
     if (!user.isAdmin) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/like/all`);
+        const response = await instance.get(`/like/all`);
 
         setLikes(response.data);
       } catch (error: any) {
@@ -102,45 +73,103 @@ const Vacations: FC<VacationsProps> = () => {
     getLikes();
   }, [user]);
 
-  const filterResults: () => VacationType[] = () => {
-    return [...filterData()].filter((vacation: VacationType) => {
-      const isFollowing = likes.some((follow: Follower) => follow.vacation_id === vacation.vacation_id);
-      const upComingVacations = new Date(vacation.start_date) > new Date();
-      const onGoingVacations = new Date() > new Date(vacation.start_date) && new Date() < new Date(vacation.end_date);
-
-      const isSelectedOption = (filterMethod: string) => selectedOptions.includes(filterMethod);
-
-      if (isSelectedOption("Followed Vacations") && isFollowing) {
-        return true;
-      } else if (isSelectedOption("Upcoming Vacations") && upComingVacations) {
-        return true;
-      } else if (isSelectedOption("Ongoing Vacations") && onGoingVacations) {
-        return true;
-      } else if (selectedOptions.length <= 0) {
-        return filterData();
-      }
-    });
-  };
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
 
   const onClose = () => {
     setIsActiveAlertModal(false);
   };
 
-  useEffect(() => {}, []);
   const [slicedData, setSlicedData] = useState<VacationType[]>([]);
 
-  const handlePaginationData = (newSlicedData: any[]) => {
-    setSlicedData(newSlicedData);
+  // const paginationData = useSelector((state: StoreRootTypes) => state.filterVacations.setVacations);
+
+  const [vacationObj, setVacationObj] = useState<VacationType>({
+    vacation_id: 0,
+    destination: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    price: 0,
+    image_path: "",
+  });
+
+  const [filteredVacations, setFilteredVacations] = useState<VacationType[]>([]);
+
+  useEffect(() => {
+    setSlicedData(vacations);
+    setFilteredVacations(vacations);
+  }, [vacations]);
+
+  const handleVacationStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.currentTarget;
+    const filteredVacations = [...vacations].filter((vacation: VacationType) => {
+      if (value === String(vacationStatus.ALL)) {
+        return vacations;
+      } else if (value === String(vacationStatus.UP_COMING)) {
+        return new Date(vacation.start_date).getTime() > new Date().getTime();
+      } else if (value === String(vacationStatus.ON_GOING)) {
+        return (
+          new Date(vacation.start_date).getTime() < new Date().getTime() &&
+          new Date(vacation.end_date).getTime() > new Date().getTime()
+        );
+      } else if (value === String(vacationStatus.FAVORITES)) {
+        return likes.some((like: any) => vacation.vacation_id === like.vacation_id);
+      }
+    });
+    setFilteredVacations(filteredVacations);
   };
 
   useEffect(() => {
-    filterResults();
-  }, [selectedOptions]);
+    // console.log(currentPage);
+  }, [currentPage]);
+
+  const { handleChange, values, handleSubmit, errors, touched, handleBlur, resetForm } = useFormik({
+    initialValues: vacationObj,
+    validationSchema: vacationSearchSchema,
+    onSubmit: (values: VacationType) => {
+      const data = filteredVacations.length > 0 ? [...filteredVacations] : [...vacations];
+      const formikVacations = data.filter((vacation: VacationType) => {
+        const start_date = new Date(vacation.start_date);
+        start_date.setHours(0, 0, 0, 0);
+
+        const start_date_user = new Date(values.start_date);
+        start_date_user.setHours(0, 0, 0, 0);
+
+        const end_date_user = new Date(values.end_date);
+        end_date_user.setHours(0, 0, 0, 0);
+
+        return (
+          (!values.destination || vacation.destination === values.destination) &&
+          (!values.start_date || start_date >= start_date_user) &&
+          (!values.end_date || start_date <= end_date_user) &&
+          (!values.price || vacation.price <= values.price)
+        );
+      });
+      setFilteredVacations(formikVacations);
+      setVacationObj(values);
+    },
+  });
+
+  const resetFilters = () => {
+    resetForm();
+    setFilteredVacations(vacations);
+  };
+  const [pages, setPages] = useState<number[]>([]);
+  const [lastPage, setLastPage] = useState<number>(0);
+  const [perPage, setPerPage] = useState<number>(10);
+
+  const paginateData = () => {
+    const startIndex = (currentPage - 1) * perPage;
+    const endIndex = Math.min(startIndex + perPage, filteredVacations.length);
+    const dataInPage = [...filteredVacations].slice(startIndex, endIndex);
+    console.log(dataInPage);
+
+    setSlicedData(dataInPage);
+  };
 
   useEffect(() => {
-    console.log(slicedData);
-  }, [slicedData]);
+    paginateData();
+  }, [filteredVacations, currentPage]);
 
   return (
     <div className={styles.Vacations}>
@@ -149,58 +178,127 @@ const Vacations: FC<VacationsProps> = () => {
       </Modal>
       <div className={styles.header}>
         <div className={styles.title}>
-          <h2>Hello {user.firstName}, </h2>
-          <p>Your next vacation is around the corner!</p>
+          <h1>Explore the World: Discover the Best Destinations for Your Next Vacation!</h1>
         </div>
-        <div className={styles.SearchFilterPanel}>
-          <div className={styles.searchSection}>
-            <input onChange={handleChangeInput} type="text" name="searchVacation" id="searchVacation" placeholder="Search vacation..." />
+        <form onSubmit={handleSubmit} className={styles.SearchFilterPanel}>
+          <div className={styles.section}>
+            <p className={styles.title}>Destination</p>
+            <div className={styles.details}>
+              <select
+                value={values.destination}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                name="destination"
+                className={errors.destination && touched.destination ? styles.inputError : ""}
+              >
+                {errors.destination && touched.destination && (
+                  <p className={styles.error}>{errors.destination}</p>
+                )}
+
+                <option value="" disabled>
+                  Select Destination
+                </option>
+                {vacations.map((vacation: VacationType, index) => {
+                  return (
+                    <option key={index} value={vacation.destination}>
+                      {vacation.destination}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
-          <div className={isActiveDropdown ? `${styles.filter} ${styles.isActive}` : `${styles.filter}`}>
-            <button
-              onClick={toggleDropdown}
-              className={isActiveDropdown ? `${styles.dropdownTrigger} ${styles.isActive}` : `${styles.dropdownTrigger}`}
-            >
-              <HiAdjustmentsHorizontal />
-              {isActiveDropdown && <span>Filter By:</span>}
-            </button>
-            <Dropdown
-              selectedOptions={selectedOptions}
-              setSelectedOptions={setSelectedoptions}
-              onClose={() => toggleDropdown}
-              list={filterBy}
-              isActive={isActiveDropdown}
-            />
+          <hr />
+          <div className={styles.section}>
+            <p className={styles.title}>Start Date Between</p>
+            <div className={styles.details}>
+              <input
+                value={values.start_date}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                type="date"
+                name="start_date"
+                className={errors.start_date && touched.start_date ? styles.inputError : ""}
+              />
+              {errors.start_date && touched.start_date && (
+                <p className={styles.error}>{errors.start_date}</p>
+              )}
+              <p> & </p>
+              <input
+                value={values.end_date}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                type="date"
+                name="end_date"
+                className={errors.end_date && touched.end_date ? styles.inputError : ""}
+              />
+              {errors.end_date && touched.end_date && (
+                <p className={styles.error}>{errors.end_date}</p>
+              )}
+            </div>
           </div>
-        </div>
+          <hr />
+          <div className={styles.section}>
+            <p className={styles.title}>Max Price</p>
+            <div className={styles.details}>
+              <input
+                value={values.price}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                type="number"
+                placeholder="250$"
+                name="price"
+                id=""
+              />
+              {errors.price && touched.price && <p className={styles.error}>{errors.price}</p>}
+            </div>
+          </div>
+          <hr />
+          <div className={styles.section}>
+            <div className={styles.details}>
+              <button className={styles.outline} onClick={resetFilters}>
+                <FaTrashAlt />
+              </button>
+              <button type="submit" className={styles.primary}>
+                Find Vactions
+              </button>
+            </div>
+          </div>
+          <div className={styles.infoBar}>
+            <p>Showing {filteredVacations.length} results</p>
+            <select onChange={handleVacationStatus}>
+              <option selected value={vacationStatus.ALL}>
+                All Vacations
+              </option>
+              <option value={vacationStatus.UP_COMING}>Upcoming Vacations</option>
+              <option value={vacationStatus.ON_GOING}>Ongoing Vacations</option>
+              <option value={vacationStatus.FAVORITES}>Favorites</option>
+            </select>
+          </div>
+        </form>
       </div>
       <div className={styles.main}>
-        {filterResults().length > 0 ? (
+        {slicedData.length > 0 ? (
           <div className={styles.vacations}>
             {slicedData.map((vacation: VacationType) => {
-              const startDateFormat = new Date(vacation.start_date).toISOString().split("T")[0];
-              const endDateFormat = new Date(vacation.end_date).toISOString().split("T")[0];
-              return (
-                <Vacation
-                  key={vacation.vacation_id}
-                  vacation={{
-                    ...vacation,
-                    start_date: startDateFormat,
-                    end_date: endDateFormat,
-                  }}
-                  user={user}
-                />
-              );
+              return <Vacation key={vacation.vacation_id} vacation={vacation} user={user} />;
             })}
-            <div className={styles.paginateVacations}>
-              <Pagination perPage={10} data={filterResults()} setData={handlePaginationData} />
-            </div>
           </div>
         ) : (
           <div className={styles.loader}>
             <Loader />
           </div>
         )}
+      </div>
+      <div className={styles.footer}>
+        <div className={styles.paginateVacations}>
+          <Pagination
+            perPage={10}
+            data={filteredVacations}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
       </div>
     </div>
   );

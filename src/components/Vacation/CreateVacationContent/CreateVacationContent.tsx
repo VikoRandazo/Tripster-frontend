@@ -7,6 +7,7 @@ import { VacationType, vacationInitState } from "../../../models/Vacation";
 import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
+import instance from "../../../api/AxiosInstance";
 
 interface CreateVacationContentProps {
   onClose: () => void;
@@ -15,18 +16,17 @@ interface CreateVacationContentProps {
 const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
-
   const setChangeImgMode = () => {
     setChangeImgState(!changeImgState);
   };
 
-  const { handleChange, values, handleSubmit, errors, touched, handleBlur, isSubmitting } = useFormik({
+  const { handleChange, values, handleSubmit, errors, touched, handleBlur } = useFormik({
     initialValues: vacationInitState,
     validationSchema: vacationSchema,
     onSubmit: async (values, actions) => {
       setSubmitting(true);
       try {
-        const response = await axios.post(`http://localhost:5000/api/vacations/new`, values);
+        const response = await instance.post(`/vacations/new`, values);
         console.log(response);
       } catch (error) {
         console.error("Error posting new vacation:", error);

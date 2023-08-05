@@ -3,13 +3,14 @@
 @import "../../../styles/mixins.module.scss";
 
 .Pagination {
+  position: sticky;
   width: 30%;
   height: 100%;
   @extend %flexRow;
   background-color: #fff;
   padding: 1em 0;
   border-radius: 2em;
-  box-shadow: 0 0.5em 0.25em rgba($colorElement, 0.4);
+  // box-shadow: 0 0.5em 0.25em rgba($colorElement, 0.4);
 
 
   & > .page {
@@ -26,7 +27,7 @@
       border-radius: 50em;
       font-size: 1em;
       background-color: transparent;
-      
+
       &.selected {
         background-color: $colorPrimary;
         color: #fff;

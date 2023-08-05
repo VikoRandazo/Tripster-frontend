@@ -18,7 +18,6 @@ const Register: FC<RegisterProps> = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
   const [userData, setUserData] = useState<User>({
@@ -34,26 +33,6 @@ const Register: FC<RegisterProps> = () => {
     navigate("/login");
   };
 
-  
-
-  const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData((prevState) => {
-      const { name, value } = e.target;
-      return {
-        ...prevState,
-        [name]: value,
-      };
-    });
-  };
-
-  // const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   const response = await axios.post("http://localhost:5000/api/auth/register", userData);
-  //   console.log(response);
-  //   navigate("/vacations");
-  //   dispatch(authActions.setUser(userData));
-  // };
-
   const { handleChange, values, handleSubmit, errors, touched, handleBlur } = useFormik({
     initialValues: userData,
     validationSchema: RegisterSchema,
@@ -66,14 +45,14 @@ const Register: FC<RegisterProps> = () => {
           if (response.status === 201) {
             navigate("/vacations");
             dispatch(authActions.setUser(userData));
+            dispatch(authActions.setToken(response.data));
+            localStorage.setItem(`token`, response.data);
           }
-        } catch (error:any) {
+        } catch (error: any) {
           if (error.response.status === 409) {
             setAlertMessage(error.response.data.message);
-          }
-          else {
+          } else {
             setAlertMessage(error.message);
-
           }
           setIsActiveAlertModal(true);
         } finally {
@@ -84,8 +63,8 @@ const Register: FC<RegisterProps> = () => {
   });
 
   const onClose = () => {
-    setIsActiveAlertModal(false)
-  }
+    setIsActiveAlertModal(false);
+  };
 
   return (
     <div className={styles.Register}>
@@ -113,7 +92,6 @@ const Register: FC<RegisterProps> = () => {
                 type="text"
                 name="firstName"
                 placeholder="First name"
-                
                 className={errors.firstName && touched.firstName ? styles.inputError : ``}
               />
               {errors.firstName && touched.firstName && <p className={styles.error}>{errors.firstName}</p>}
@@ -128,7 +106,6 @@ const Register: FC<RegisterProps> = () => {
                 type="text"
                 name="lastName"
                 placeholder="Last name"
-                
                 className={errors.lastName && touched.lastName ? styles.inputError : ``}
               />
               {errors.lastName && touched.lastName && <p className={styles.error}>{errors.lastName}</p>}
@@ -143,7 +120,6 @@ const Register: FC<RegisterProps> = () => {
                 type="email"
                 name="email"
                 placeholder="user@example.com"
-                
                 className={errors.email && touched.email ? styles.inputError : ``}
               />
               {errors.email && touched.email && <p className={styles.error}>{errors.email}</p>}
@@ -158,7 +134,6 @@ const Register: FC<RegisterProps> = () => {
                 type="password"
                 name="password"
                 placeholder="Password"
-                
                 className={errors.password && touched.password ? styles.inputError : ``}
               />
               {errors.password && touched.password && <p className={styles.error}>{errors.password}</p>}

@@ -23,7 +23,7 @@ button {
   width: max-content;
   border: none;
   height: 3em;
-  border-radius: 0.5em;
+  border-radius: 0.25em;
   aspect-ratio: 16 / 9;
   outline: none;
   font-size: 0.875em;
@@ -32,7 +32,7 @@ button {
   align-items: center;
   gap: 0.5em;
   flex: 1 0 100px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
 
   &.submittingBtn {
@@ -70,8 +70,7 @@ button {
     max-width: 80%;
 
     &:is(:hover) {
-      box-shadow: 0 0.25em 0.5em rgba($colorPrimary, 0.5);
-      transform: translatey(-0.5vh);
+      background-color: rgba($colorPrimaryDark, 1);
     }
   }
 
@@ -83,7 +82,7 @@ button {
     border: 0.125em solid rgba($colorPara, 0.5);
     max-width: 20%;
     padding: 0 1em;
-    
+
     &:hover {
       background-color: $colorPara;
       color: $colorBackgroundPage;
@@ -108,12 +107,31 @@ button {
       color: $colorDivider;
     }
   }
+
+  &.outline {
+    width: auto;
+    align-items: center;
+    justify-content: center;
+    background-color:transparent;
+    color: rgba($colorTitle, 0.75);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 80%;
+    border: 0.125em solid rgba($colorElement, 1);
+    
+
+    &:hover {
+      background-color: rgba($colorElement, 1);
+      color: rgba($colorTitle, 1);
+    }
+  }
 }
 
 select {
   padding: 0.75em;
   border-radius: 0.5em;
-  color: $colorPrimary;
+  color: $colorText;
   option {
     padding: 1em;
   }
@@ -123,7 +141,6 @@ input {
   padding: 0.75em 1.25em;
   border-radius: 0.5em;
   outline: none;
-  border: 0.125em solid transparent;
   font-size: 0.875em;
   background-color: rgba($colorElement, 0.2);
   color: rgba($colorText, 1);
@@ -132,27 +149,19 @@ input {
   flex-grow: 1;
   max-height: 3em;
 
-  &[type="text"] {
-    width: 100%;
-  }
-
   &::placeholder {
     opacity: 0.9;
     color: rgba($colorActive, 1);
   }
-  &:focus {
-    border: 0.125em solid $colorText;
-    box-shadow: 0 0.25em 0.75em rgba($colorText, 0.4);
-    &::placeholder {
-      opacity: 0.9;
-      color: rgba($colorActive, 1);
-    }
+  &::placeholder {
+    opacity: 0.9;
+    color: rgba($colorActive, 1);
   }
 }
 
 textarea {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   outline: none;
@@ -167,7 +176,7 @@ textarea {
   font-size: 0.875em;
   color: rgba($colorText, 1);
   transition: all 0.2s ease;
-  width: 100% ;
+  width: 100%;
 
   &:focus {
     border: 0.125em solid $colorText;
@@ -234,7 +243,6 @@ a {
   }
 }
 
-
 ul {
   list-style: none;
 }
@@ -246,10 +254,15 @@ ul {
 *::-webkit-scrollbar-track {
   border-radius: 0.5em;
   background-color: $colorLabel;
-  
 }
 
 *::-webkit-scrollbar-thumb {
   background-color: rgba($colorText, 0.4);
   border-radius: 10px;
+}
+
+hr {
+  width: 1px;
+  border-color: rgba($colorLabel, 0.1);
+  height: 100%;
 }

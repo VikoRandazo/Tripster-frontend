@@ -1,84 +1,70 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import styles from "./Pagination.module.scss";
+import { useDispatch } from "react-redux";
 
-interface PaginationProps {
+interface PaginationProps<T> {
   perPage: number;
-  data: any[];
-  setData: (newDataArray: any[][]) => void;
+  data: T[];
+  currentPage: number;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }
 
-const Pagination: FC<PaginationProps> = ({ data, perPage, setData }) => {
-  const [array, setArray] = useState<any[][]>([]);
+const Pagination = <T extends any>(props: PaginationProps<T>) => {
+  const { perPage, data, currentPage, setCurrentPage } = props;
   const [pages, setPages] = useState<number[]>([]);
-
   const [lastPage, setLastPage] = useState<number>(0);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [page, setPage] = useState<number>(currentPage);
 
   useEffect(() => {
     setLastPage(pages.length);
-  }, [array, pages]);
+  }, [pages]);
 
   const goToPrevPage = () => {
-    if (page > 1) {
-      setPage((prevstate) => prevstate - 1);
-    } else {
-      return;
+    if (currentPage > 1) {
+      setCurrentPage((prevstate) => prevstate - 1);
     }
   };
 
   const setCustomPage = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { innerText } = e.currentTarget;
-    setPage(Number(innerText));
+    setCurrentPage(Number(e.currentTarget.innerText));
   };
 
   const goToNextPage = () => {
-    setPage((prevstate) => prevstate + 1);
+    setCurrentPage((prevstate) => prevstate + 1);
   };
 
   useEffect(() => {
-    const startIndex = (page - 1) * perPage;
-    const endIndex = Math.min(startIndex + perPage, data.length);
-    const dataInPage = data.slice(startIndex, endIndex);
-    setArray(dataInPage);
-    setData(dataInPage);
-  }, [page, perPage]);
-
-
-
-
-  const fillPagesArray = () => {
-    if (array.length > 0) {
-      const totalPages = Math.ceil(data.length / perPage);
-      setPages(new Array(totalPages).fill(0).map((_, index) => index + 1));
-    }
-  };
-
-  useEffect(() => {
-    if (array.length > 0) {
-      fillPagesArray();
-    }
+    const totalPages = Math.ceil(data.length / perPage);
+    setPages(new Array(totalPages).fill(0).map((_, index) => index + 1));
   }, [data, perPage]);
-
-  useEffect(() => {
-    setCurrentPage(page)
-  }, [page, setData]);
 
   return (
     <div className={styles.Pagination}>
       <div className={styles.page}>
-        <button className={styles.paginationBtn} onClick={goToPrevPage} disabled={page === 1}>
+        <button
+          className={styles.paginationBtn}
+          onClick={goToPrevPage}
+          disabled={currentPage === 1}
+        >
           {"<"}
         </button>
         {pages.map((pageNumber, index) => (
           <button
-            key={index + 1}
+            key={index}
             onClick={setCustomPage}
-            className={index + 1 === currentPage ? `${styles.paginationBtn} ${styles.selected}` : `${styles.paginationBtn}`}>
+            className={
+              pageNumber === currentPage
+                ? `${styles.paginationBtn} ${styles.selected}`
+                : `${styles.paginationBtn}`
+            }
+          >
             {pageNumber}
           </button>
         ))}
-        <button className={styles.paginationBtn} onClick={goToNextPage} disabled={page === lastPage}>
+        <button
+          className={styles.paginationBtn}
+          onClick={goToNextPage}
+          disabled={currentPage === lastPage}
+        >
           {">"}
         </button>
       </div>

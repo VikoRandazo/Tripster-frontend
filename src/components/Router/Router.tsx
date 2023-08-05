@@ -17,17 +17,14 @@ const token = useSelector((state:StoreRootTypes) => state.auth.setToken)
 
 
   const PrivateRoutes = () => {
-  let auth = {'token':token}
+  let auth = {token}
 return (
     auth.token ? <Outlet/> : <Navigate to='/login'/>
   )
 
 }
 
-useEffect(() => {
-console.log(token);
 
-},[token])
 
 
   return (

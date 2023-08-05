@@ -40,35 +40,6 @@ const Login: FC<LoginProps> = () => {
     navigate("/register");
   };
 
-  // const handleUserInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setUser((prevState) => {
-  //     const { name, value } = e.target;
-  //     return {
-  //       ...prevState,
-  //       [name]: value,
-  //     };
-  //   });
-  // };
-
-  // const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/api/auth/login", user);
-  //     const token = dispatch(authActions.setToken(response.data.token));
-
-  //     if (token) {
-  //       dispatch(authActions.isLoggedIn(true));
-  //       localStorage.setItem(`token`, token.payload);
-  //       navigate("/vacations");
-  //       if (user.email) {
-  //         getUserFromDatabase();
-  //       }
-  //     }
-  //   } catch (error: any) {
-  //     alert(error.response.data.Error);
-  //   }
-  // };
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);

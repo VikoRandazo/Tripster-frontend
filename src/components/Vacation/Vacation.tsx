@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Vacation.module.scss";
 import { FaHeart, FaRegCalendarAlt, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { VacationType } from "../../models/Vacation";
 import { User } from "../../models/User";
 import Modal from "../Modal/Modal";
 import EditVacationContent from "./EditVacationContent/EditVacationContent";
 import Prompt from "../CustomElements/Prompt/Prompt";
 import Alert from "../CustomElements/Alert/Alert";
+import instance from "../../api/AxiosInstance";
 
 interface VacationProps {
   vacation: VacationType;
@@ -15,17 +15,17 @@ interface VacationProps {
 }
 
 const Vacation: FC<VacationProps> = ({ vacation, user }) => {
-  const { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
+  const { vacation_id, destination, description, start_date, end_date, price, image_path } =
+    vacation;
   const [like, setLike] = useState<boolean>(false);
   const [likes, setLikes] = useState<[]>([]);
   const [isOpenEditVacation, setIsOpenEditVacation] = useState<boolean>(false);
   const [isOpenConfirmDelete, setIsOpenConfirmDelete] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
-
   const getLikes = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/like/${vacation_id}`);
+      const response = await instance.get(`/like/${vacation_id}`);
       if (response.data) {
         setLikes(response.data);
       }
@@ -34,12 +34,22 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       setIsActiveAlertModal(true);
     }
   };
+  useEffect(() => {
+    vacation.start_date = String(
+      new Date(start_date).toISOString().split("T")[0]
+      .split("-").join("/")
+    );
+    vacation.end_date = String(
+      new Date(end_date).toISOString().split("T")[0]
+      .split("-").join("/")
+    );
+  }, [start_date, end_date]);
 
   const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       console.log(user);
       e.stopPropagation();
-      const response = await axios.post(`http://localhost:5000/api/like/${user.user_id}`, { vacation_id });
+      const response = await instance.post(`/like/${user.user_id}`, { vacation_id });
       if (response.data.likeAdded) {
         setLike(true);
       } else {
@@ -60,14 +70,15 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     const handleDeleteVacation = async () => {
       try {
         if (isConfirmed) {
-          const response = await axios.delete(`http://localhost:5000/api/vacations/${vacation_id}`);
+          const response = await instance.delete(`/vacations/${vacation_id}`);
           console.log(response.data);
         } else {
           setIsConfirmed(false);
         }
       } catch (error: any) {
-        setAlertMessage(error.message)
-        setIsActiveAlertModal(true)      }
+        setAlertMessage(error.message);
+        setIsActiveAlertModal(true);
+      }
     };
     handleDeleteVacation();
   }, [isConfirmed]);
@@ -79,7 +90,6 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   const openEditVacationModal = () => {
     setIsOpenEditVacation(true);
   };
-
 
   const onClose = () => {
     if (isOpenEditVacation) {
@@ -96,7 +106,6 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     setIsConfirmed(confirmation);
   };
 
-
   return (
     <div className={styles.Vacation}>
       {isOpenEditVacation && (
@@ -106,7 +115,11 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       )}
 
       {isOpenConfirmDelete && (
-        <Modal isActive={isOpenConfirmDelete} onClose={onClose} title={`Are you sure you want to delete ${destination}`}>
+        <Modal
+          isActive={isOpenConfirmDelete}
+          onClose={onClose}
+          title={`Are you sure you want to delete ${destination}`}
+        >
           <Prompt
             message={`Are you sure you want to delete ${destination}?`}
             onClose={onClose}
@@ -120,7 +133,14 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
         <Alert onClose={onClose} alertMessage={alertMessage} />
       </Modal>
 
-      <div className={styles.image} style={{ background: `url(${image_path})`, backgroundSize: `cover`, backgroundPosition: `bottom` }}>
+      <div
+        className={styles.image}
+        style={{
+          background: `url(${image_path})`,
+          backgroundSize: `cover`,
+          backgroundPosition: `bottom`,
+        }}
+      >
         <div className={styles.title}>
           <h3>{destination}</h3>
         </div>
@@ -128,7 +148,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       <div className={styles.header}>
         <FaRegCalendarAlt />
         <span>
-          {start_date.split("T")[0].split("-").reverse().join("/")} - {end_date.split("T")[0].split("-").reverse().join("/")}
+          {start_date} {"-"} {end_date}
         </span>
       </div>
       <div className={styles.main}>

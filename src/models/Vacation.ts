@@ -10,6 +10,12 @@ export interface VacationType {
   [key: number]: number | number | undefined;
 }
 
+export enum vacationStatus {
+  ALL = 0,
+  UP_COMING = 1,
+  FAVORITES = 2,
+  ON_GOING = 3,
+}
 
 export const vacationInitState = {
   vacation_id: 0,

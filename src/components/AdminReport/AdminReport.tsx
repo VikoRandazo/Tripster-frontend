@@ -5,6 +5,7 @@ import styles from "./AdminReport.module.scss";
 import axios from "axios";
 import { VacationType } from "../../models/Vacation";
 import { FaFileCsv } from "react-icons/fa";
+import instance from "../../api/AxiosInstance";
 
 interface AdminReportProps {}
 
@@ -19,7 +20,7 @@ const AdminReport: FC<AdminReportProps> = () => {
 
   const getData = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/like/all`);
+      const response = await instance.get(`/like/all`);
       setUserData(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -75,7 +76,13 @@ const AdminReport: FC<AdminReportProps> = () => {
   };
 
   const exportCSV = async () => {
-    const response = await axios.get(`http://localhost:5000/api/vacations/csv/export`);
+    try {
+      
+      const response = await instance.get(`vacations/csv/export`);
+    } catch (error) {
+      console.log(error);
+      
+    }
   };
 
   return (
