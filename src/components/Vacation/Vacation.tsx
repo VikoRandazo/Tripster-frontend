@@ -35,14 +35,8 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     }
   };
   useEffect(() => {
-    vacation.start_date = String(
-      new Date(start_date).toISOString().split("T")[0]
-      .split("-").join("/")
-    );
-    vacation.end_date = String(
-      new Date(end_date).toISOString().split("T")[0]
-      .split("-").join("/")
-    );
+    vacation.start_date = new Date(vacation.start_date).toISOString().split("T")[0];
+    vacation.end_date = new Date(vacation.end_date).toISOString().split("T")[0];
   }, [start_date, end_date]);
 
   const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -148,7 +142,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       <div className={styles.header}>
         <FaRegCalendarAlt />
         <span>
-          {start_date} {"-"} {end_date}
+          {start_date.split("-").reverse().join("/")} - {end_date.split("-").reverse().join("/")}
         </span>
       </div>
       <div className={styles.main}>

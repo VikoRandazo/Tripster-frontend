@@ -30,7 +30,9 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
     onSubmit: async (values, actions) => {
       setSubmitting(true);
       try {
-        const response = await instance.put(`/vacations/${vacation_id}`);
+        console.log(values);
+        
+        const response = await instance.put(`/vacations/${vacation_id}`,values);
         console.log(response);
       } catch (error) {
         console.error("Error posting new vacation:", error);

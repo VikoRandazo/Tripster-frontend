@@ -72,6 +72,9 @@ const Vacations: FC<VacationsProps> = () => {
   useEffect(() => {
     getLikes();
   }, [user]);
+  useEffect(() => {
+    console.log(vacations);
+  }, [vacations]);
 
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
 
@@ -119,24 +122,17 @@ const Vacations: FC<VacationsProps> = () => {
     setFilteredVacations(filteredVacations);
   };
 
-  useEffect(() => {
-    // console.log(currentPage);
-  }, [currentPage]);
-
   const { handleChange, values, handleSubmit, errors, touched, handleBlur, resetForm } = useFormik({
     initialValues: vacationObj,
     validationSchema: vacationSearchSchema,
     onSubmit: (values: VacationType) => {
       const data = filteredVacations.length > 0 ? [...filteredVacations] : [...vacations];
       const formikVacations = data.filter((vacation: VacationType) => {
-        const start_date = new Date(vacation.start_date);
-        start_date.setHours(0, 0, 0, 0);
+        const start_date = new Date(vacation.start_date).setHours(0, 0, 0, 0);
 
-        const start_date_user = new Date(values.start_date);
-        start_date_user.setHours(0, 0, 0, 0);
+        const start_date_user = new Date(values.start_date).setHours(0, 0, 0, 0);
 
-        const end_date_user = new Date(values.end_date);
-        end_date_user.setHours(0, 0, 0, 0);
+        const end_date_user = new Date(values.end_date).setHours(0, 0, 0, 0);
 
         return (
           (!values.destination || vacation.destination === values.destination) &&
@@ -161,8 +157,9 @@ const Vacations: FC<VacationsProps> = () => {
   const paginateData = () => {
     const startIndex = (currentPage - 1) * perPage;
     const endIndex = Math.min(startIndex + perPage, filteredVacations.length);
-    const dataInPage = [...filteredVacations].slice(startIndex, endIndex);
-    console.log(dataInPage);
+    const dataInPage = [...filteredVacations]
+      .slice(startIndex, endIndex)
+      .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
 
     setSlicedData(dataInPage);
   };
@@ -256,7 +253,7 @@ const Vacations: FC<VacationsProps> = () => {
           <hr />
           <div className={styles.section}>
             <div className={styles.details}>
-              <button className={styles.outline} onClick={resetFilters}>
+              <button type="button" className={styles.outline} onClick={resetFilters}>
                 <FaTrashAlt />
               </button>
               <button type="submit" className={styles.primary}>
