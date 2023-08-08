@@ -7,35 +7,50 @@ import { ReactComponent as LogoVertical } from "../../../styles/assets/logo/logo
 import Modal from "../../Modal/Modal";
 import CreateVacationContent from "../../Vacation/CreateVacationContent/CreateVacationContent";
 import { FaDoorOpen } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../../../slices/authSlice";
+import { StoreRootTypes } from "../../../store";
 interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
-  const [user, setUser] = useState<User>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    isAdmin: 0,
-  });
+  // const [user, setUser] = useState<User>({
+  //   firstName: "",
+  //   lastName: "",
+  //   email: "",
+  //   password: "",
+  //   isAdmin: 0,
+  // });
 
-  const getUser = async () => {
-    const token = localStorage.getItem(`token`);
-    if (token) {
-      const decode: User = jwtDecode(token);
-      setUser(decode);
-      setToken(token);
-    }
-  };
+  const user = useSelector((state:StoreRootTypes) => state.auth.setUser)
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  // const getUser = async () => {
+  //   const token = localStorage.getItem(`token`);
+  //   if (token) {
+  //     const decode: User = jwtDecode(token);
+  //     setToken(token);
+  //     setUser(decode);
+  //   }
+  // };
 
   const { firstName, lastName, email, password, isAdmin } = user;
+
+  // useEffect(() => {
+  //   // getUser();
+  //   const token = localStorage.getItem(`token`);
+  //   if (token) {
+  //     const decode: User = jwtDecode(token);
+  //     setToken(token);
+  //     setUser(decode);
+  //   }
+  // }, [token]);
+
+  useEffect(() => {
+console.log(user.email);
+
+  },[user])
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const categoryRef = useRef<HTMLLIElement>(null);
@@ -85,7 +100,7 @@ const Header: FC<HeaderProps> = () => {
       <Modal isActive={isOpen} onClose={closeModal} title="Create new vacation">
         <CreateVacationContent onClose={closeModal} />
       </Modal>
-      <ul className={styles.tabs}>
+      <ul className={isAdmin ? `${styles.tabs} ${styles.Admin}` : styles.tabs}>
         <li ref={categoryRef} className={styles.category} onClick={handleSelectedCategory}>
           Vacations
         </li>
@@ -97,11 +112,13 @@ const Header: FC<HeaderProps> = () => {
         <LogoVertical />
       </div>
       <div className={styles.buttons}>
-        <button onClick={openModal} className={styles.primary}>
-          New Vacation
-        </button>
+        {isAdmin ? (
+          <button onClick={openModal} className={styles.primary}>
+            New Vacation
+          </button>
+        ) : null}
         <button onClick={logout} className={styles.logoutBtn}>
-          <FaDoorOpen />
+          <FaDoorOpen /> Logout
         </button>
       </div>
     </nav>

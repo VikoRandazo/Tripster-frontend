@@ -8,6 +8,8 @@ import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 import instance from "../../../api/AxiosInstance";
+import { useDispatch } from "react-redux";
+import { vacationsActions } from "../../../slices/vacationsSlice";
 
 interface EditVacationContentProps {
   vacation: VacationType;
@@ -15,6 +17,9 @@ interface EditVacationContentProps {
 }
 
 const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }) => {
+  console.log(vacation);
+  
+  const dispatch = useDispatch()
   const { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
   const [updatedVacation, setUpdatedVacation] = useState<VacationType>(vacation);
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
@@ -41,6 +46,8 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
           setSubmitting(false);
           onClose();
         }, 3000);
+        dispatch(vacationsActions.editVacation(values))
+
       }
     },
   });

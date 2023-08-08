@@ -12,12 +12,16 @@ import instance from "../../api/AxiosInstance";
 import { FaTrashAlt } from "react-icons/fa";
 import { vacationSearchSchema } from "../../validations/VacationValidation";
 import { useFormik } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+import { vacationsActions } from "../../slices/vacationsSlice";
+import { StoreRootTypes } from "../../store";
 
 interface VacationsProps {}
 
 const Vacations: FC<VacationsProps> = () => {
   const [alertMessage, setAlertMessage] = useState<string>("");
-  const [vacations, setVacations] = useState<VacationType[]>([]);
+  // const [vacations, setVacations] = useState<VacationType[]>([]);
+  const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
   const [likes, setLikes] = useState<[]>([]);
   const [user, setUser] = useState<User>({
     user_id: 0,
@@ -28,7 +32,7 @@ const Vacations: FC<VacationsProps> = () => {
     isAdmin: 0,
   });
   const [currentPage, setCurrentPage] = useState<number>(1);
-
+  const dispatch = useDispatch();
   const getUser = async () => {
     const token = localStorage.getItem(`token`);
     if (token) {
@@ -41,7 +45,17 @@ const Vacations: FC<VacationsProps> = () => {
     try {
       const response = await instance.get(`/vacations/all`);
       const data = response.data;
-      setVacations(data);
+
+      const formatStartDate = data.map(
+        (vacation: VacationType) =>
+          (vacation.start_date = new Date(vacation.start_date).toISOString().split(`T`)[0])
+      );
+      const formatEndDate = data.map(
+        (vacation: VacationType) =>
+          (vacation.end_date = new Date(vacation.end_date).toISOString().split(`T`)[0])
+      );
+
+      dispatch(vacationsActions.setVacations(data));
     } catch (error: any) {
       setAlertMessage(error.message);
       setIsActiveAlertModal(true);
@@ -72,9 +86,6 @@ const Vacations: FC<VacationsProps> = () => {
   useEffect(() => {
     getLikes();
   }, [user]);
-  useEffect(() => {
-    console.log(vacations);
-  }, [vacations]);
 
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
 

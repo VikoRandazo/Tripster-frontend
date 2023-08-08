@@ -8,12 +8,15 @@ import { vacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 import instance from "../../../api/AxiosInstance";
+import { useDispatch } from "react-redux";
+import { vacationsActions } from "../../../slices/vacationsSlice";
 
 interface CreateVacationContentProps {
   onClose: () => void;
 }
 
 const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
+  const dispatch = useDispatch()
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const setChangeImgMode = () => {
@@ -35,6 +38,7 @@ const CreateVacationContent: FC<CreateVacationContentProps> = ({ onClose }) => {
           setSubmitting(false);
           onClose();
         }, 3000);
+        dispatch(vacationsActions.addVacation(values))
       }
     },
   });

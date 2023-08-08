@@ -8,6 +8,8 @@ import EditVacationContent from "./EditVacationContent/EditVacationContent";
 import Prompt from "../CustomElements/Prompt/Prompt";
 import Alert from "../CustomElements/Alert/Alert";
 import instance from "../../api/AxiosInstance";
+import { useDispatch } from "react-redux";
+import { vacationsActions } from "../../slices/vacationsSlice";
 
 interface VacationProps {
   vacation: VacationType;
@@ -15,14 +17,16 @@ interface VacationProps {
 }
 
 const Vacation: FC<VacationProps> = ({ vacation, user }) => {
-  const { vacation_id, destination, description, start_date, end_date, price, image_path } =
-    vacation;
+  let { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
   const [like, setLike] = useState<boolean>(false);
   const [likes, setLikes] = useState<[]>([]);
   const [isOpenEditVacation, setIsOpenEditVacation] = useState<boolean>(false);
   const [isOpenConfirmDelete, setIsOpenConfirmDelete] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
+
+  const dispatch = useDispatch();
+
   const getLikes = async () => {
     try {
       const response = await instance.get(`/like/${vacation_id}`);
@@ -34,14 +38,9 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       setIsActiveAlertModal(true);
     }
   };
-  useEffect(() => {
-    vacation.start_date = new Date(vacation.start_date).toISOString().split("T")[0];
-    vacation.end_date = new Date(vacation.end_date).toISOString().split("T")[0];
-  }, [start_date, end_date]);
 
   const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
-      console.log(user);
       e.stopPropagation();
       const response = await instance.post(`/like/${user.user_id}`, { vacation_id });
       if (response.data.likeAdded) {
@@ -63,8 +62,9 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   useEffect(() => {
     const handleDeleteVacation = async () => {
       try {
-        if (isConfirmed) {
+        if (isConfirmed && vacation_id) {
           const response = await instance.delete(`/vacations/${vacation_id}`);
+          dispatch(vacationsActions.deleteVacation(vacation_id));
           console.log(response.data);
         } else {
           setIsConfirmed(false);
@@ -99,6 +99,9 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   const handleConfirmation = (confirmation: boolean) => {
     setIsConfirmed(confirmation);
   };
+
+  // const formattedStartDate = new Date(start_date).toISOString().split(`T`)[0];
+  // const formattedEndDate = new Date(end_date).toISOString().split(`T`)[0];
 
   return (
     <div className={styles.Vacation}>
@@ -142,7 +145,9 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
       <div className={styles.header}>
         <FaRegCalendarAlt />
         <span>
-          {start_date.split("-").reverse().join("/")} - {end_date.split("-").reverse().join("/")}
+          {start_date.split(`-`).reverse().join(`/`)} - {end_date.split(`-`).reverse().join(`/`)}
+          {/* {new Date(start_date).toISOString().split(`T`)[0].split(`-`).reverse().join(`/`)} -
+          {new Date(end_date).toISOString().split(`T`)[0].split(`-`).reverse().join(`/`)} */}
         </span>
       </div>
       <div className={styles.main}>

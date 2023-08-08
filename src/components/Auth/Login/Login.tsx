@@ -12,6 +12,7 @@ import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 import Alert from "../../CustomElements/Alert/Alert";
 import Modal from "../../Modal/Modal";
+import jwtDecode from "jwt-decode";
 
 interface LoginProps {}
 
@@ -24,17 +25,17 @@ const Login: FC<LoginProps> = () => {
     password: "",
   });
 
-  const getUserFromDatabase = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/auth/${user.email}`);
-      dispatch(authActions.setUser(response.data));
-      console.log(response.data);
-      setUser(response.data[0]);
-    } catch (error: any) {
-      setAlertMessage(error.message);
-      setIsActiveAlertModal(true);
-    }
-  };
+  // const getUserFromDatabase = async () => {
+  //   try {
+  //     const response = await axios.get(`http://localhost:5000/api/auth/${user.email}`);
+  //     dispatch(authActions.setUser(response.data.user));
+  //     console.log(response.data);
+  //     setUser(response.data.user);
+  //   } catch (error: any) {
+  //     setAlertMessage(error.message);
+  //     setIsActiveAlertModal(true);
+  //   }
+  // };
 
   const handleNavigate = () => {
     navigate("/register");
@@ -52,26 +53,23 @@ const Login: FC<LoginProps> = () => {
         try {
           const response = await axios.post("http://localhost:5000/api/auth/login", values);
           const token = dispatch(authActions.setToken(response.data.token));
-          console.log(response);
 
           if (token) {
             dispatch(authActions.isLoggedIn(true));
             localStorage.setItem(`token`, token.payload);
             navigate("/vacations");
-            if (user.email) {
-              getUserFromDatabase();
-            }
+            const decode: User = jwtDecode(token.payload);
+            dispatch(authActions.setUser(decode));
           }
         } catch (error: any) {
           console.log(error.response.data.error);
           if (error.response.status === 401) {
             setAlertMessage(error.response.data.error);
           }
-    
+
           setIsActiveAlertModal(true);
         } finally {
           setSubmitting(false);
-          
         }
       }, 3000);
     },
@@ -127,7 +125,9 @@ const Login: FC<LoginProps> = () => {
                 value={values.password}
                 placeholder="Password"
               />
-              {errors.password && touched.password && <p className={styles.error}>{errors.password}</p>}
+              {errors.password && touched.password && (
+                <p className={styles.error}>{errors.password}</p>
+              )}
             </div>
           </div>
           <div className={styles.footer}>
