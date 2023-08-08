@@ -117,6 +117,8 @@ console.log(user.email);
             New Vacation
           </button>
         ) : null}
+        <span>Hello, {user.firstName}!</span>
+        <hr />
         <button onClick={logout} className={styles.logoutBtn}>
           <FaDoorOpen /> Logout
         </button>

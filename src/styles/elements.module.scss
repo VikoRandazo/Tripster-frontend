@@ -67,7 +67,7 @@ button {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    max-width: 80%;
+    max-width: 70%;
 
     &:is(:hover) {
       background-color: rgba($colorPrimaryDark, 1);
@@ -79,13 +79,13 @@ button {
     justify-content: center;
     background-color: transparent;
     color: rgba($colorPara, 0.8);
-    border: 0.125em solid rgba($colorPara, 0.5);
-    max-width: 20%;
+    max-width: 30%;
     padding: 0 1em;
+    border: 0.125em solid rgba($colorElement, 1);
 
     &:hover {
-      background-color: $colorPara;
-      color: $colorBackgroundPage;
+      background-color: $colorElement;
+      color: $colorText;
     }
   }
 
@@ -263,6 +263,6 @@ ul {
 
 hr {
   width: 1px;
-  border-color: rgba($colorLabel, 0.1);
+  border-color: rgba($colorLabel, 0.25);
   height: 100%;
 }

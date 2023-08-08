@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Vacations.module.scss";
-import { VacationType, vacationStatus } from "../../models/Vacation";
+import { VacationType, vacationInitState, vacationStatus } from "../../models/Vacation";
 import Vacation from "../Vacation/Vacation";
 import { User } from "../../models/User";
 import jwtDecode from "jwt-decode";
@@ -20,7 +20,6 @@ interface VacationsProps {}
 
 const Vacations: FC<VacationsProps> = () => {
   const [alertMessage, setAlertMessage] = useState<string>("");
-  // const [vacations, setVacations] = useState<VacationType[]>([]);
   const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
   const [likes, setLikes] = useState<[]>([]);
   const [user, setUser] = useState<User>({
@@ -114,6 +113,10 @@ const Vacations: FC<VacationsProps> = () => {
     setFilteredVacations(vacations);
   }, [vacations]);
 
+  useEffect(() => {
+    console.log(filteredVacations);
+  }, [filteredVacations]);
+
   const handleVacationStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.currentTarget;
     const filteredVacations = [...vacations].filter((vacation: VacationType) => {
@@ -133,10 +136,15 @@ const Vacations: FC<VacationsProps> = () => {
     setFilteredVacations(filteredVacations);
   };
 
+  const resetFilters = () => {
+    resetForm();
+    setFilteredVacations(vacations);
+  };
+
   const { handleChange, values, handleSubmit, errors, touched, handleBlur, resetForm } = useFormik({
     initialValues: vacationObj,
     validationSchema: vacationSearchSchema,
-    onSubmit: (values: VacationType) => {
+    onSubmit: (values: VacationType, actions) => {
       const data = filteredVacations.length > 0 ? [...filteredVacations] : [...vacations];
       const formikVacations = data.filter((vacation: VacationType) => {
         const start_date = new Date(vacation.start_date).setHours(0, 0, 0, 0);
@@ -157,12 +165,6 @@ const Vacations: FC<VacationsProps> = () => {
     },
   });
 
-  const resetFilters = () => {
-    resetForm();
-    setFilteredVacations(vacations);
-  };
-  const [pages, setPages] = useState<number[]>([]);
-  const [lastPage, setLastPage] = useState<number>(0);
   const [perPage, setPerPage] = useState<number>(10);
 
   const paginateData = () => {

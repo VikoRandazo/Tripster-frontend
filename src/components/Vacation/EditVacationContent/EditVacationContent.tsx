@@ -1,10 +1,9 @@
-import React, { ChangeEvent, FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import styles from "./EditVacationContent.module.scss";
-import { VacationType, vacationInitState } from "../../../models/Vacation";
-import axios from "axios";
-import { FaPencilAlt, FaPlus } from "react-icons/fa";
+import { VacationType } from "../../../models/Vacation";
+import { FaPlus } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { vacationSchema } from "../../../validations/VacationValidation";
+import { OldVacationSchema } from "../../../validations/VacationValidation";
 import { useFormik } from "formik";
 import Loader from "../../Loader/Loader";
 import instance from "../../../api/AxiosInstance";
@@ -17,10 +16,8 @@ interface EditVacationContentProps {
 }
 
 const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }) => {
-  console.log(vacation);
-  
-  const dispatch = useDispatch()
-  const { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
+  const dispatch = useDispatch();
+  const { vacation_id } = vacation;
   const [updatedVacation, setUpdatedVacation] = useState<VacationType>(vacation);
   const [changeImgState, setChangeImgState] = useState<boolean>(false);
 
@@ -29,32 +26,26 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
   };
   const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const { handleChange, values, handleSubmit, errors, touched, handleBlur, isSubmitting } = useFormik({
-    initialValues: updatedVacation,
-    validationSchema: vacationSchema,
-    onSubmit: async (values, actions) => {
-      setSubmitting(true);
-      try {
-        console.log(values);
-        
-        const response = await instance.put(`/vacations/${vacation_id}`,values);
-        console.log(response);
-      } catch (error) {
-        console.error("Error posting new vacation:", error);
-      } finally {
-        setTimeout(() => {
-          setSubmitting(false);
-          onClose();
-        }, 3000);
-        dispatch(vacationsActions.editVacation(values))
-
-      }
-    },
-  });
-
-  useEffect(() => {
-    console.log(`isSubmitting:`, isSubmitting);
-  }, [isSubmitting]);
+  const { handleChange, values, handleSubmit, errors, touched, handleBlur } =
+    useFormik({
+      initialValues: updatedVacation,
+      validationSchema: OldVacationSchema,
+      onSubmit: async (values, actions) => {
+        setSubmitting(true);
+        try {
+          const response = await instance.put(`/vacations/${vacation_id}`, values);
+          console.log(response);
+        } catch (error) {
+          console.error("Error posting new vacation:", error);
+        } finally {
+          setTimeout(() => {
+            setSubmitting(false);
+            onClose();
+          }, 3000);
+          dispatch(vacationsActions.editVacation(values));
+        }
+      },
+    });
 
   return (
     <form onSubmit={handleSubmit} className={styles.EditVacationContent}>
@@ -87,7 +78,9 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                 value={values.image_path}
                 className={errors.image_path && touched.image_path ? styles.inputError : ""}
               />
-              {errors.image_path && touched.image_path && <p className={styles.error}>{errors.image_path}</p>}
+              {errors.image_path && touched.image_path && (
+                <p className={styles.error}>{errors.image_path}</p>
+              )}
 
               <div className={styles.instructions}>
                 <h2>Instructions</h2>
@@ -122,7 +115,9 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                   name="destination"
                   id="vacationDestination"
                 />
-                {errors.destination && touched.destination && <p className={styles.error}>{errors.destination}</p>}
+                {errors.destination && touched.destination && (
+                  <p className={styles.error}>{errors.destination}</p>
+                )}
               </div>
               <div className={styles.dateAndPriceWrapper}>
                 <div className={styles.wrapper}>
@@ -136,9 +131,10 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                     required
                     onBlur={handleBlur}
                     className={errors.start_date && touched.start_date ? styles.inputError : ""}
-                    min={new Date().toISOString().split("T")[0]}
                   />
-                  {errors.start_date && touched.start_date && <p className={styles.error}>{errors.start_date}</p>}
+                  {errors.start_date && touched.start_date && (
+                    <p className={styles.error}>{errors.start_date}</p>
+                  )}
                 </div>
 
                 <div className={styles.wrapper}>
@@ -152,9 +148,10 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                     value={values.end_date}
                     required
                     onBlur={handleBlur}
-                    min={new Date().toISOString().split("T")[0]}
                   />
-                  {errors.end_date && touched.end_date && <p className={styles.error}>{errors.end_date}</p>}
+                  {errors.end_date && touched.end_date && (
+                    <p className={styles.error}>{errors.end_date}</p>
+                  )}
                 </div>
 
                 <div className={styles.wrapper}>
@@ -187,7 +184,9 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
                   value={values.description}
                   className={errors.description && touched.description ? styles.inputError : ""}
                 ></textarea>
-                {errors.description && touched.description && <p className={styles.error}>{errors.description}</p>}
+                {errors.description && touched.description && (
+                  <p className={styles.error}>{errors.description}</p>
+                )}
               </div>
             </>
           )}
@@ -197,7 +196,11 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
         <button onClick={onClose} className={styles.secondary}>
           Cancel
         </button>
-        <button type={"submit"} disabled={submitting} className={submitting ? styles.submittingBtn : styles.primary}>
+        <button
+          type={"submit"}
+          disabled={submitting}
+          className={submitting ? styles.submittingBtn : styles.primary}
+        >
           {submitting ? <Loader /> : `Update`}
         </button>
       </div>

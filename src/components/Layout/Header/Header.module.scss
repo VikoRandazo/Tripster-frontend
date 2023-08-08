@@ -30,7 +30,7 @@
 
   & > .tabs {
     display: none;
-    
+
     &.Admin {
       @extend %flexRow;
       gap: 1em;
@@ -60,7 +60,17 @@
     @extend %flexRow;
     gap: 1em;
     width: auto;
-  
+    height: 100%;
+    align-items: center;
+
+    & > span {
+      white-space: nowrap;
+    }
+
+    hr {
+      height: 100%;
+    }
+
     & > button.logoutBtn {
       height: 3em;
       max-width: auto;

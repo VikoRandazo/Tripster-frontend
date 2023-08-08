@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./Vacation.module.scss";
 import { FaHeart, FaRegCalendarAlt, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { VacationType } from "../../models/Vacation";
@@ -10,6 +10,7 @@ import Alert from "../CustomElements/Alert/Alert";
 import instance from "../../api/AxiosInstance";
 import { useDispatch } from "react-redux";
 import { vacationsActions } from "../../slices/vacationsSlice";
+import { Follower } from "../../models/Follower";
 
 interface VacationProps {
   vacation: VacationType;
@@ -30,14 +31,27 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   const getLikes = async () => {
     try {
       const response = await instance.get(`/like/${vacation_id}`);
+      const likedByUser = response.data.some((like: Follower) => like.vacation_id === vacation_id);
+
       if (response.data) {
         setLikes(response.data);
+
+        if (likedByUser) {
+          likeBtn.current?.classList.add(styles.liked);
+        } else {
+          likeBtn.current?.classList.remove(styles.liked);
+        }
       }
     } catch (error: any) {
       setAlertMessage(error.message);
       setIsActiveAlertModal(true);
     }
   };
+
+  const likeBtn = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    getLikes();
+  }, [like]);
 
   const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
@@ -65,7 +79,6 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
         if (isConfirmed && vacation_id) {
           const response = await instance.delete(`/vacations/${vacation_id}`);
           dispatch(vacationsActions.deleteVacation(vacation_id));
-          console.log(response.data);
         } else {
           setIsConfirmed(false);
         }
@@ -76,10 +89,6 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     };
     handleDeleteVacation();
   }, [isConfirmed]);
-
-  useEffect(() => {
-    getLikes();
-  }, [like]);
 
   const openEditVacationModal = () => {
     setIsOpenEditVacation(true);
@@ -100,9 +109,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
     setIsConfirmed(confirmation);
   };
 
-  // const formattedStartDate = new Date(start_date).toISOString().split(`T`)[0];
-  // const formattedEndDate = new Date(end_date).toISOString().split(`T`)[0];
-
+  useEffect(() => {}, []);
   return (
     <div className={styles.Vacation}>
       {isOpenEditVacation && (
@@ -146,8 +153,6 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
         <FaRegCalendarAlt />
         <span>
           {start_date.split(`-`).reverse().join(`/`)} - {end_date.split(`-`).reverse().join(`/`)}
-          {/* {new Date(start_date).toISOString().split(`T`)[0].split(`-`).reverse().join(`/`)} -
-          {new Date(end_date).toISOString().split(`T`)[0].split(`-`).reverse().join(`/`)} */}
         </span>
       </div>
       <div className={styles.main}>
@@ -165,7 +170,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
           </div>
         ) : (
           <div className={styles.actions}>
-            <button onClick={handleLikeVacation} className={styles.secondary}>
+            <button ref={likeBtn} onClick={handleLikeVacation} className={styles.secondary}>
               <FaHeart />
               {likes.length}
             </button>

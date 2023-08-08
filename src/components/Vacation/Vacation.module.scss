@@ -80,6 +80,17 @@
 
       & > button {
         height: 100%;
+
+        &.liked {
+          border: none;
+
+
+          & > svg {
+            color: $colorLike;
+            transition: all 0.2s ease;
+          }
+        }
+        
       }
     }
   }
