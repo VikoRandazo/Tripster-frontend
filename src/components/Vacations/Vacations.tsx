@@ -43,7 +43,10 @@ const Vacations: FC<VacationsProps> = () => {
   const getVacations = async () => {
     try {
       const response = await instance.get(`/vacations/all`);
-      const data = response.data;
+      const data = response.data.sort(
+        (a: VacationType, b: VacationType) =>
+          new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+      );
 
       const formatStartDate = data.map(
         (vacation: VacationType) =>
@@ -172,7 +175,6 @@ const Vacations: FC<VacationsProps> = () => {
     const endIndex = Math.min(startIndex + perPage, filteredVacations.length);
     const dataInPage = [...filteredVacations]
       .slice(startIndex, endIndex)
-      .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
 
     setSlicedData(dataInPage);
   };
