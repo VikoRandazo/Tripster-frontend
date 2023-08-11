@@ -21,10 +21,12 @@ const Register: FC<RegisterProps> = () => {
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
   const [userData, setUserData] = useState<User>({
+    user_id: 0,
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    isAdmin: 0,
   });
 
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -44,9 +46,9 @@ const Register: FC<RegisterProps> = () => {
           console.log(response);
           if (response.status === 201) {
             navigate("/vacations");
-            dispatch(authActions.setUser(userData));
-            dispatch(authActions.setToken(response.data));
-            localStorage.setItem(`token`, response.data);
+            dispatch(authActions.setUser(response.data.selectUser));
+            dispatch(authActions.setToken(response.data.token));
+            localStorage.setItem(`token`, response.data.token);
           }
         } catch (error: any) {
           if (error.response.status === 409) {
@@ -94,7 +96,9 @@ const Register: FC<RegisterProps> = () => {
                 placeholder="First name"
                 className={errors.firstName && touched.firstName ? styles.inputError : ``}
               />
-              {errors.firstName && touched.firstName && <p className={styles.error}>{errors.firstName}</p>}
+              {errors.firstName && touched.firstName && (
+                <p className={styles.error}>{errors.firstName}</p>
+              )}
             </div>
 
             <div className={styles.inputContainer}>
@@ -108,7 +112,9 @@ const Register: FC<RegisterProps> = () => {
                 placeholder="Last name"
                 className={errors.lastName && touched.lastName ? styles.inputError : ``}
               />
-              {errors.lastName && touched.lastName && <p className={styles.error}>{errors.lastName}</p>}
+              {errors.lastName && touched.lastName && (
+                <p className={styles.error}>{errors.lastName}</p>
+              )}
             </div>
 
             <div className={styles.inputContainer}>
@@ -136,7 +142,9 @@ const Register: FC<RegisterProps> = () => {
                 placeholder="Password"
                 className={errors.password && touched.password ? styles.inputError : ``}
               />
-              {errors.password && touched.password && <p className={styles.error}>{errors.password}</p>}
+              {errors.password && touched.password && (
+                <p className={styles.error}>{errors.password}</p>
+              )}
             </div>
           </div>
           <div className={styles.footer}>

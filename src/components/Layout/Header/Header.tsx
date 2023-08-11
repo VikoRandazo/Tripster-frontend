@@ -10,46 +10,28 @@ import { FaDoorOpen } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../../../slices/authSlice";
 import { StoreRootTypes } from "../../../store";
+import { HiDocumentPlus, HiPower } from "react-icons/hi2";
+import { vacationsActions } from "../../../slices/vacationsSlice";
 interface HeaderProps {}
 
 const Header: FC<HeaderProps> = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
-  // const [user, setUser] = useState<User>({
-  //   firstName: "",
-  //   lastName: "",
-  //   email: "",
-  //   password: "",
-  //   isAdmin: 0,
-  // });
 
-  const user = useSelector((state:StoreRootTypes) => state.auth.setUser)
-
-  // const getUser = async () => {
-  //   const token = localStorage.getItem(`token`);
-  //   if (token) {
-  //     const decode: User = jwtDecode(token);
-  //     setToken(token);
-  //     setUser(decode);
-  //   }
-  // };
-
-  const { firstName, lastName, email, password, isAdmin } = user;
-
-  // useEffect(() => {
-  //   // getUser();
-  //   const token = localStorage.getItem(`token`);
-  //   if (token) {
-  //     const decode: User = jwtDecode(token);
-  //     setToken(token);
-  //     setUser(decode);
-  //   }
-  // }, [token]);
+  const user = useSelector((state: StoreRootTypes) => state.auth.setUser);
+  const getUser = async () => {
+    if (!user.email) {
+      if (token) {
+        dispatch(authActions.setUser(jwtDecode(token)));
+      }
+    }
+  };
 
   useEffect(() => {
-console.log(user.email);
+    getUser();
+  }, []);
 
-  },[user])
+  const { firstName, lastName, email, password, isAdmin } = user;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -90,8 +72,9 @@ console.log(user.email);
   const logout = () => {
     localStorage.removeItem(`token`);
     setToken("");
-    dispatch(authActions.isLoggedIn(false));
-    dispatch(authActions.setToken(""));
+
+    dispatch(vacationsActions.resetState());
+    dispatch(authActions.resetState());
     navigate(`/login`);
   };
 
@@ -112,15 +95,20 @@ console.log(user.email);
         <LogoVertical />
       </div>
       <div className={styles.buttons}>
+        <span>
+          Hello,
+          <br /> {user.firstName} {user.lastName}!
+        </span>
+
         {isAdmin ? (
           <button onClick={openModal} className={styles.primary}>
-            New Vacation
+            Create Vacation
+            <HiDocumentPlus />
           </button>
         ) : null}
-        <span>Hello, {user.firstName} {user.lastName}!</span>
         <hr />
         <button onClick={logout} className={styles.logoutBtn}>
-          <FaDoorOpen /> Logout
+          <HiPower />
         </button>
       </div>
     </nav>

@@ -1,6 +1,6 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./Vacation.module.scss";
-import { FaHeart, FaRegCalendarAlt, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import { FaRegCalendarAlt, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { VacationType } from "../../models/Vacation";
 import { User } from "../../models/User";
 import Modal from "../Modal/Modal";
@@ -8,19 +8,22 @@ import EditVacationContent from "./EditVacationContent/EditVacationContent";
 import Prompt from "../CustomElements/Prompt/Prompt";
 import Alert from "../CustomElements/Alert/Alert";
 import instance from "../../api/AxiosInstance";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { vacationsActions } from "../../slices/vacationsSlice";
 import { Follower } from "../../models/Follower";
+import { HiBookmark } from "react-icons/hi2";
+import { authActions } from "../../slices/authSlice";
+import { StoreRootTypes } from "../../store";
+import LikeBtn from "../CustomElements/LikeBtn/LikeBtn";
 
 interface VacationProps {
   vacation: VacationType;
   user: User;
+  likes: Follower[];
 }
 
-const Vacation: FC<VacationProps> = ({ vacation, user }) => {
+const Vacation: FC<VacationProps> = ({ vacation, user, likes }) => {
   let { vacation_id, destination, description, start_date, end_date, price, image_path } = vacation;
-  const [like, setLike] = useState<boolean>(false);
-  const [likes, setLikes] = useState<[]>([]);
   const [isOpenEditVacation, setIsOpenEditVacation] = useState<boolean>(false);
   const [isOpenConfirmDelete, setIsOpenConfirmDelete] = useState<boolean>(false);
   const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
@@ -28,45 +31,16 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
 
   const dispatch = useDispatch();
 
-  const getLikes = async () => {
-    try {
-      const response = await instance.get(`/like/${vacation_id}`);
-      const likedByUser = response.data.some((like: Follower) => like.vacation_id === vacation_id);
+  // const getLikes = async () => {
+  //   try {
+  //     const response = await instance.get(`/like/${vacation_id}`);
+  //     setLikes(response.data);
+  //   } catch (error: any) {
+  //     setAlertMessage(error.message);
+  //     setIsActiveAlertModal(true);
+  //   }
+  // };
 
-      if (response.data) {
-        setLikes(response.data);
-
-        if (likedByUser) {
-          likeBtn.current?.classList.add(styles.liked);
-        } else {
-          likeBtn.current?.classList.remove(styles.liked);
-        }
-      }
-    } catch (error: any) {
-      setAlertMessage(error.message);
-      setIsActiveAlertModal(true);
-    }
-  };
-
-  const likeBtn = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    getLikes();
-  }, [like]);
-
-  const handleLikeVacation = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    try {
-      e.stopPropagation();
-      const response = await instance.post(`/like/${user.user_id}`, { vacation_id });
-      if (response.data.likeAdded) {
-        setLike(true);
-      } else {
-        setLike(false);
-      }
-    } catch (error: any) {
-      setAlertMessage(error.message);
-      setIsActiveAlertModal(true);
-    }
-  };
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
 
   const DeleteVacation = async () => {
@@ -110,6 +84,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
   };
 
   useEffect(() => {}, []);
+
   return (
     <div className={styles.Vacation}>
       {isOpenEditVacation && (
@@ -170,10 +145,7 @@ const Vacation: FC<VacationProps> = ({ vacation, user }) => {
           </div>
         ) : (
           <div className={styles.actions}>
-            <button ref={likeBtn} onClick={handleLikeVacation} className={styles.secondary}>
-              <FaHeart />
-              {likes.length}
-            </button>
+            <LikeBtn likes={likes} user={user} vacation={vacation} />
             <button className={styles.primary}>{price}$</button>
           </div>
         )}

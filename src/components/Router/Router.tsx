@@ -5,27 +5,15 @@ import Login from "../Auth/Login/Login";
 import Register from "../Auth/Register/Register";
 import Vacations from "../Vacations/Vacations";
 import AdminReport from "../AdminReport/AdminReport";
-import { Navigate, Outlet } from 'react-router-dom'
-import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { StoreRootTypes } from "../../store";
+import { authActions } from "../../slices/authSlice";
 
 interface RouterProps {}
 
 const Router: FC<RouterProps> = () => {
-
-const token = useSelector((state:StoreRootTypes) => state.auth.setToken)
-
-
-  const PrivateRoutes = () => {
-  let auth = {token}
-return (
-    auth.token ? <Outlet/> : <Navigate to='/login'/>
-  )
-
-}
-
-
-
+  const token = localStorage.getItem("token");
 
   return (
     <Routes>
@@ -33,11 +21,8 @@ return (
       <Route path={"/login"} element={<Login />} />
       <Route path={"/register"} element={<Register />} />
 
-      <Route element={<PrivateRoutes />} >
-      <Route path={"/vacations"} element={<Vacations />} />
-      <Route path={"/report"} element={<AdminReport />} />
-      </Route>
-      
+      <Route path={"/vacations"} element={token ? <Vacations /> : <Navigate to="/login" />} />
+      <Route path={"/report"} element={token ? <AdminReport /> : <Navigate to="/login" />} />
 
       {/* Default */}
       <Route path={"/"} element={<Login />} />

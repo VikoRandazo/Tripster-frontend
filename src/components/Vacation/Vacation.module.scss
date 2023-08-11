@@ -22,7 +22,6 @@
     min-height: 50vh;
   }
 
-
   & > .image {
     align-items: flex-start;
     height: 60%;
@@ -84,13 +83,15 @@
         &.liked {
           border: none;
 
-
           & > svg {
             color: $colorLike;
             transition: all 0.2s ease;
+            min-width: 30%;
+            max-width: 50%;
+            width: auto;
+            height: 50%;
           }
         }
-        
       }
     }
   }

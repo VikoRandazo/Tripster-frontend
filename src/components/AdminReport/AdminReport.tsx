@@ -1,9 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ChartData, ChartOptions } from "chart.js";
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import { Bar } from "react-chartjs-2";
 import styles from "./AdminReport.module.scss";
-import axios from "axios";
-import { VacationType } from "../../models/Vacation";
 import { FaFileCsv } from "react-icons/fa";
 import instance from "../../api/AxiosInstance";
 
@@ -38,17 +43,12 @@ const AdminReport: FC<AdminReportProps> = () => {
     return counts;
   }, {});
 
-  const uniqueUserData = userData.filter((vacation) => vacationLikesCounts[vacation.destination] === 1);
-
   const likesCounts = Object.values(vacationLikesCounts);
-  //
-  const vacationsDestination = userData.map((vacation: VacationType) => {
-    return vacation.destination;
-  });
+  const keysArray = Object.keys(vacationLikesCounts);
 
   const chartData = {
     type: `bar`,
-    labels: vacationsDestination,
+    labels: keysArray,
     datasets: [
       {
         label: "Likes",
@@ -77,11 +77,9 @@ const AdminReport: FC<AdminReportProps> = () => {
 
   const exportCSV = async () => {
     try {
-      
       const response = await instance.get(`vacations/csv/export`);
     } catch (error) {
       console.log(error);
-      
     }
   };
 

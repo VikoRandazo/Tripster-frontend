@@ -17,6 +17,11 @@ export const vacationsSlice = createSlice({
   initialState: initVacationsState as VacationsSlice,
   reducers: {
     setVacations(state, { payload }: PayloadAction<VacationType[]>) {
+      payload.sort((a: VacationType, b: VacationType) => {
+        const dateA = new Date(a.start_date);
+        const dateB = new Date(b.start_date);
+        return dateA.getTime() - dateB.getTime();
+      });
       state.setVacations = payload;
     },
     addVacation(state, { payload }: PayloadAction<VacationType>) {
@@ -37,6 +42,9 @@ export const vacationsSlice = createSlice({
       if (foundVacation !== -1) {
         state.setVacations[foundVacation] = payload;
       }
+    },
+    resetState(state: any) {
+      return { ...initVacationsState };
     },
   },
 });

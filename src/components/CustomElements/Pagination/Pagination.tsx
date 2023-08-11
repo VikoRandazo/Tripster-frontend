@@ -1,6 +1,7 @@
 import React, { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import styles from "./Pagination.module.scss";
 import { useDispatch } from "react-redux";
+import { VacationType } from "../../../models/Vacation";
 
 interface PaginationProps<T> {
   perPage: number;

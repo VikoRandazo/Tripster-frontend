@@ -8,6 +8,8 @@
 .Vacations {
   height: auto;
   width: 100%;
+  animation: welcome 2s ease;
+  content: "Welcome";
 
   & > .header {
     width: 100%;
@@ -64,6 +66,17 @@
           height: 100%;
           align-items: center;
           justify-content: center;
+
+          & > .primary {
+            max-width: 100%;
+            width: auto;
+
+            & > svg {
+              
+              width: 10%;
+              height: 100%;
+            }
+          }
 
           & > input {
             border: none;

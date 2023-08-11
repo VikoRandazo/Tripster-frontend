@@ -1,9 +1,7 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import styles from "./Vacations.module.scss";
-import { VacationType, vacationInitState, vacationStatus } from "../../models/Vacation";
+import { VacationType, vacationStatus } from "../../models/Vacation";
 import Vacation from "../Vacation/Vacation";
-import { User } from "../../models/User";
-import jwtDecode from "jwt-decode";
 import Loader from "../Loader/Loader";
 import Alert from "../CustomElements/Alert/Alert";
 import Modal from "../Modal/Modal";
@@ -15,39 +13,38 @@ import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { vacationsActions } from "../../slices/vacationsSlice";
 import { StoreRootTypes } from "../../store";
+import { HiRocketLaunch } from "react-icons/hi2";
+import { authActions } from "../../slices/authSlice";
+import { Follower } from "../../models/Follower";
+import { User } from "../../models/User";
+import jwtDecode from "jwt-decode";
 
 interface VacationsProps {}
 
 const Vacations: FC<VacationsProps> = () => {
   const [alertMessage, setAlertMessage] = useState<string>("");
-  const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
-  const [likes, setLikes] = useState<[]>([]);
-  const [user, setUser] = useState<User>({
-    user_id: 0,
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    isAdmin: 0,
-  });
+  const user: User = useSelector((state: StoreRootTypes) => state.auth.setUser);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const dispatch = useDispatch();
+  const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
+  const allLikes = useSelector((state: StoreRootTypes) => state.auth.allLikes);
+  const token = localStorage.getItem(`token`);
+
   const getUser = async () => {
-    const token = localStorage.getItem(`token`);
-    if (token) {
-      const decode: User = jwtDecode(token);
-      setUser(decode);
+    if (!user.email) {
+      if (token) {
+        dispatch(authActions.setUser(jwtDecode(token)));
+      }
     }
   };
 
+  useEffect(() => {
+    getUser();
+  }, []);
   const getVacations = async () => {
     try {
       const response = await instance.get(`/vacations/all`);
-      const data = response.data.sort(
-        (a: VacationType, b: VacationType) =>
-          new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
-      );
-
+      const data = response.data;
       const formatStartDate = data.map(
         (vacation: VacationType) =>
           (vacation.start_date = new Date(vacation.start_date).toISOString().split(`T`)[0])
@@ -66,19 +63,29 @@ const Vacations: FC<VacationsProps> = () => {
   };
 
   useEffect(() => {
-    getUser();
-    getVacations();
+    setTimeout(() => {
+      getVacations();
+    }, 3000);
   }, []);
+
+  const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
 
   const getLikes = async () => {
     if (!user.isAdmin) {
       try {
         const response = await instance.get(`/like/all`);
+        const data = response.data;
 
-        setLikes(response.data);
+        const likedVacations = data
+          .filter((like: Follower) => like.user_id === user.user_id)
+          .map((like: Follower) => ({
+            vacation_id: like.vacation_id,
+            user_id: like.user_id,
+          }));
+
+        dispatch(authActions.allLikes(data));
       } catch (error: any) {
         console.log(error);
-
         setAlertMessage(error.response.data.message);
         setIsActiveAlertModal(true);
       }
@@ -89,15 +96,11 @@ const Vacations: FC<VacationsProps> = () => {
     getLikes();
   }, [user]);
 
-  const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
-
   const onClose = () => {
     setIsActiveAlertModal(false);
   };
 
   const [slicedData, setSlicedData] = useState<VacationType[]>([]);
-
-  // const paginationData = useSelector((state: StoreRootTypes) => state.filterVacations.setVacations);
 
   const [vacationObj, setVacationObj] = useState<VacationType>({
     vacation_id: 0,
@@ -112,15 +115,11 @@ const Vacations: FC<VacationsProps> = () => {
   const [filteredVacations, setFilteredVacations] = useState<VacationType[]>([]);
 
   useEffect(() => {
-    setSlicedData(vacations);
     setFilteredVacations(vacations);
   }, [vacations]);
 
-  useEffect(() => {
-    console.log(filteredVacations);
-  }, [filteredVacations]);
-
   const handleVacationStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentPage(1);
     const { value } = e.currentTarget;
     const filteredVacations = [...vacations].filter((vacation: VacationType) => {
       if (value === String(vacationStatus.ALL)) {
@@ -133,15 +132,22 @@ const Vacations: FC<VacationsProps> = () => {
           new Date(vacation.end_date).getTime() > new Date().getTime()
         );
       } else if (value === String(vacationStatus.FAVORITES)) {
-        return likes.some((like: any) => vacation.vacation_id === like.vacation_id);
+        return allLikes.some(
+          (like: Follower) =>
+            vacation.vacation_id === like.vacation_id && user.user_id === like.user_id
+        );
       }
     });
     setFilteredVacations(filteredVacations);
   };
-
+  const vacationStatusRef = useRef<HTMLSelectElement>(null);
   const resetFilters = () => {
     resetForm();
+    setCurrentPage(1);
     setFilteredVacations(vacations);
+    if (vacationStatusRef.current) {
+      vacationStatusRef.current.value = String(vacationStatus.ALL);
+    }
   };
 
   const { handleChange, values, handleSubmit, errors, touched, handleBlur, resetForm } = useFormik({
@@ -151,9 +157,7 @@ const Vacations: FC<VacationsProps> = () => {
       const data = filteredVacations.length > 0 ? [...filteredVacations] : [...vacations];
       const formikVacations = data.filter((vacation: VacationType) => {
         const start_date = new Date(vacation.start_date).setHours(0, 0, 0, 0);
-
         const start_date_user = new Date(values.start_date).setHours(0, 0, 0, 0);
-
         const end_date_user = new Date(values.end_date).setHours(0, 0, 0, 0);
 
         return (
@@ -170,18 +174,25 @@ const Vacations: FC<VacationsProps> = () => {
 
   const [perPage, setPerPage] = useState<number>(10);
 
-  const paginateData = () => {
+  const sortAndSetSlicedData = (data: VacationType[]) => {
+    const sortedData = data.slice().sort((a: VacationType, b: VacationType) => {
+      return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
+    });
+
     const startIndex = (currentPage - 1) * perPage;
-    const endIndex = Math.min(startIndex + perPage, filteredVacations.length);
-    const dataInPage = [...filteredVacations]
-      .slice(startIndex, endIndex)
+    const endIndex = Math.min(startIndex + perPage, sortedData.length);
+    const dataInPage = sortedData.slice(startIndex, endIndex);
 
     setSlicedData(dataInPage);
   };
 
   useEffect(() => {
-    paginateData();
+    sortAndSetSlicedData(filteredVacations);
   }, [filteredVacations, currentPage]);
+
+  // useEffect(() => {
+  //   console.log(allLikes);
+  // }, [allLikes]);
 
   return (
     <div className={styles.Vacations}>
@@ -273,15 +284,14 @@ const Vacations: FC<VacationsProps> = () => {
               </button>
               <button type="submit" className={styles.primary}>
                 Find Vactions
+                <HiRocketLaunch />
               </button>
             </div>
           </div>
           <div className={styles.infoBar}>
             <p>Showing {filteredVacations.length} results</p>
-            <select onChange={handleVacationStatus}>
-              <option selected value={vacationStatus.ALL}>
-                All Vacations
-              </option>
+            <select ref={vacationStatusRef} onChange={handleVacationStatus}>
+              <option value={vacationStatus.ALL}>All Vacations</option>
               <option value={vacationStatus.UP_COMING}>Upcoming Vacations</option>
               <option value={vacationStatus.ON_GOING}>Ongoing Vacations</option>
               <option value={vacationStatus.FAVORITES}>Favorites</option>
@@ -293,7 +303,14 @@ const Vacations: FC<VacationsProps> = () => {
         {slicedData.length > 0 ? (
           <div className={styles.vacations}>
             {slicedData.map((vacation: VacationType) => {
-              return <Vacation key={vacation.vacation_id} vacation={vacation} user={user} />;
+              return (
+                <Vacation
+                  key={vacation.vacation_id}
+                  vacation={vacation}
+                  user={user}
+                  likes={allLikes}
+                />
+              );
             })}
           </div>
         ) : (

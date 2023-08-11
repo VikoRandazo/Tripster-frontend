@@ -26,26 +26,24 @@ const EditVacationContent: FC<EditVacationContentProps> = ({ vacation, onClose }
   };
   const [submitting, setSubmitting] = useState<boolean>(false);
 
-  const { handleChange, values, handleSubmit, errors, touched, handleBlur } =
-    useFormik({
-      initialValues: updatedVacation,
-      validationSchema: OldVacationSchema,
-      onSubmit: async (values, actions) => {
-        setSubmitting(true);
-        try {
-          const response = await instance.put(`/vacations/${vacation_id}`, values);
-          console.log(response);
-        } catch (error) {
-          console.error("Error posting new vacation:", error);
-        } finally {
-          setTimeout(() => {
-            setSubmitting(false);
-            onClose();
-          }, 3000);
-          dispatch(vacationsActions.editVacation(values));
-        }
-      },
-    });
+  const { handleChange, values, handleSubmit, errors, touched, handleBlur } = useFormik({
+    initialValues: updatedVacation,
+    validationSchema: OldVacationSchema,
+    onSubmit: async (values, actions) => {
+      setSubmitting(true);
+      try {
+        const response = await instance.put(`/vacations/${vacation_id}`, values);
+      } catch (error) {
+        console.error("Error posting new vacation:", error);
+      } finally {
+        setTimeout(() => {
+          setSubmitting(false);
+          onClose();
+        }, 3000);
+        dispatch(vacationsActions.editVacation(values));
+      }
+    },
+  });
 
   return (
     <form onSubmit={handleSubmit} className={styles.EditVacationContent}>
