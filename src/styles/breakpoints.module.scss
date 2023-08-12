@@ -15,3 +15,21 @@ $breakpoints: (
     @warn "No such breakpoint exists: #{$breakpoint}.";
   }
 }
+
+@mixin respondBetween($breakpointMin, $breakpointMax) {
+  $breakpoint-min-value: map-get($breakpoints, $breakpointMin);
+  $breakpoint-max-value: map-get($breakpoints, $breakpointMax);
+
+  @if $breakpoint-min-value and $breakpoint-max-value {
+    @media (min-width: $breakpoint-min-value) and (max-width: $breakpoint-max-value) {
+      @content;
+    }
+  } @else {
+    @if not $breakpoint-min-value {
+      @warn "No such min breakpoint exists: #{$breakpointMin}.";
+    }
+    @if not $breakpoint-max-value {
+      @warn "No such max breakpoint exists: #{$breakpointMax}.";
+    }
+  }
+}

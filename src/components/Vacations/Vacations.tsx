@@ -30,13 +30,13 @@ const Vacations: FC<VacationsProps> = () => {
   const allLikes = useSelector((state: StoreRootTypes) => state.auth.allLikes);
   const token = localStorage.getItem(`token`);
 
-  const getUser = async () => {
-    if (!user.email) {
-      if (token) {
-        dispatch(authActions.setUser(jwtDecode(token)));
-      }
+  const getUser = () => {
+    if (token) {
+      dispatch(authActions.setUser(jwtDecode(token)));
     }
-  };
+  }
+
+
 
   useEffect(() => {
     getUser();

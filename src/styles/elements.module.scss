@@ -1,6 +1,7 @@
 @import "../styles/colorPallete.module.scss";
 @import "../styles/mixins.module.scss";
 @import "../styles/keyFrames.module.scss";
+@import "../styles/breakpoints.module.scss";
 p {
   color: $colorPara;
 }
@@ -135,6 +136,14 @@ select {
   option {
     padding: 1em;
   }
+
+  @include respond("phone") {
+    width: 100%;
+  }
+  @include respond("tablet") {
+    width: 100%;
+  }
+
 }
 
 input {
@@ -265,4 +274,39 @@ hr {
   width: 1px;
   border-color: rgba($colorLabel, 0.25);
   height: 100%;
+}
+
+.logoutBtn {
+  height: 3em;
+  width: auto;
+  max-width: min(30%, 40px);
+  background-color: rgba($colorWarning, 0.05);
+  border: 0.125em solid rgba($colorWarning, 0.6);
+  @extend %flexRow;
+  align-items: center;
+  color: rgba($colorWarning, 0.6);
+  aspect-ratio: 1 / 1;
+
+  @include respond("phone") {
+    max-width: min(30%, 40px);
+  }
+
+  @include respond("tablet") {
+    max-width: min(30%, 40px);
+  }
+
+  &:hover {
+    background-color: rgba($colorWarning, 1);
+    color: $colorBackgroundPage;
+
+    & > svg {
+      color: $colorBackgroundPage;
+    }
+  }
+
+  & > svg {
+    height: 1.5em;
+    width: 1.5em;
+    color: rgba($colorWarning, 0.7);
+  }
 }

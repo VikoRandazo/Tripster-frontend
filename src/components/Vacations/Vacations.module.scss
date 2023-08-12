@@ -11,6 +11,10 @@
   animation: welcome 2s ease;
   content: "Welcome";
 
+  @include respond("phone") {
+    padding: 1em;
+  }
+
   & > .header {
     width: 100%;
     height: auto;
@@ -32,6 +36,11 @@
         font-weight: 400;
         width: 60%;
         text-align: center;
+
+        @include respond("phone") {
+          width: 80%;
+          font-size: 1.75em;
+        }
       }
     }
 
@@ -48,12 +57,26 @@
       border: 0.125em solid rgba($colorElement, 0.25);
       box-shadow: 0 0em 1em rgba($colorElement, 0.1);
 
+      @include respond("phone") {
+        flex-direction: column;
+      }
+      @include respond("tablet") {
+        flex-direction: column;
+      }
+
       & > .section {
         width: 25%;
         height: 100%;
         @extend %flexCol;
         align-items: flex-start;
         gap: 1 em 0;
+
+        @include respond("phone") {
+          width: 100%;
+        }
+        @include respond("tablet") {
+          width: 100%;
+        }
 
         & > .title {
           color: $colorLabel;
@@ -72,7 +95,6 @@
             width: auto;
 
             & > svg {
-              
               width: 10%;
               height: 100%;
             }
@@ -124,7 +146,7 @@
   }
 
   & > .main {
-    height: auto; 
+    height: auto;
     width: 100%;
     @extend %flexCol;
     align-items: flex-start;
@@ -134,7 +156,7 @@
     & > .infoBar {
       width: 100%;
       @extend %flexRow;
-      justify-content:space-between ;
+      justify-content: space-between;
     }
 
     & > .vacations {

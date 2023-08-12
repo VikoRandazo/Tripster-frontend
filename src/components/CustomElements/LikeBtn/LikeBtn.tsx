@@ -5,7 +5,6 @@ import { HiBookmark, HiOutlineBookmark } from "react-icons/hi2";
 import instance from "../../../api/AxiosInstance";
 import { VacationType } from "../../../models/Vacation";
 import { User } from "../../../models/User";
-import { useDispatch } from "react-redux";
 
 interface LikeBtnProps {
   likes: Follower[];

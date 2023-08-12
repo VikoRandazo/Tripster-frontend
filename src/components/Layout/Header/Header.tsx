@@ -3,7 +3,7 @@ import styles from "./Header.module.scss";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../../models/User";
 import jwtDecode from "jwt-decode";
-import { ReactComponent as LogoVertical } from "../../../styles/assets/logo/logo_horizontal_Artboard 1_Artboard 1 copy.svg";
+import { ReactComponent as LogoHorizontal } from "../../../styles/assets/logo/logo_horizontal_Artboard 1_Artboard 1 copy.svg";
 import Modal from "../../Modal/Modal";
 import CreateVacationContent from "../../Vacation/CreateVacationContent/CreateVacationContent";
 import { FaDoorOpen } from "react-icons/fa";
@@ -17,6 +17,7 @@ interface HeaderProps {}
 const Header: FC<HeaderProps> = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
+
 
   const user = useSelector((state: StoreRootTypes) => state.auth.setUser);
   const getUser = async () => {
@@ -92,7 +93,7 @@ const Header: FC<HeaderProps> = () => {
         </li>
       </ul>
       <div className={styles.logo}>
-        <LogoVertical />
+        <LogoHorizontal />
       </div>
       <div className={styles.buttons}>
         <span>

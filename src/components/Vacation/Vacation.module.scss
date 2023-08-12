@@ -6,21 +6,23 @@
 
 .Vacation {
   background-color: $colorCard;
-  height: 40vh;
-  width: 18vw;
+  height: min(40vh, 400px);
+  width: max(18vw, 260px);
   border-radius: 0.5em;
   @extend %flexCol;
   align-items: flex-start;
   animation: display 1s ease;
+
+  @include respond("phone") {
+    width: 100%;
+    min-height: 50vh;
+  }
+
   @include respond("tablet") {
     min-width: calc(50% - 1em);
     min-height: 50vh;
   }
 
-  @include respond("phone") {
-    min-width: calc(100vw - 1em);
-    min-height: 50vh;
-  }
 
   & > .image {
     align-items: flex-start;

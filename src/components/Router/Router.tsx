@@ -25,7 +25,8 @@ const Router: FC<RouterProps> = () => {
       <Route path={"/report"} element={token ? <AdminReport /> : <Navigate to="/login" />} />
 
       {/* Default */}
-      <Route path={"/"} element={<Login />} />
+      
+      <Route path={"/"} element={token ? <Vacations /> : <Navigate to="/login" />} />
     </Routes>
   );
 };

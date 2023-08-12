@@ -11,15 +11,15 @@ import { Bar } from "react-chartjs-2";
 import styles from "./AdminReport.module.scss";
 import { FaFileCsv } from "react-icons/fa";
 import instance from "../../api/AxiosInstance";
+import { useResponsive } from "../../styles/responsive/useResponsive";
 
 interface AdminReportProps {}
 
 const AdminReport: FC<AdminReportProps> = () => {
   ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
-  ChartJS.defaults.font.size = 14;
-  ChartJS.defaults.aspectRatio = 16 / 9;
-  ChartJS.defaults.layout.padding = 48;
-  ChartJS.defaults.datasets.bar.categoryPercentage = 0.4;
+  const responsive = useResponsive();
+  const { isMobile } = responsive;
+
 
   const [userData, setUserData] = useState<any[]>([]);
 
@@ -46,32 +46,39 @@ const AdminReport: FC<AdminReportProps> = () => {
   const likesCounts = Object.values(vacationLikesCounts);
   const keysArray = Object.keys(vacationLikesCounts);
 
-  const chartData = {
-    type: `bar`,
+  const data = {
     labels: keysArray,
     datasets: [
       {
         label: "Likes",
         data: likesCounts,
-        borderRadius: 12,
-        backgroundColor: `#4361ee`,
       },
     ],
   };
 
-  const chartOptions = {
+  const options = {
+    // aspectRatio: 4 / 3,
+    type: `bar`,
+    responsive: true,
+    maintainAspectRatio: isMobile ? false : true,
+    indexAxis: isMobile ? (`y` as const) : (`x` as const),
+    borderRadius: 12,
+    barThickness: isMobile ? 24 : 32,
+    backgroundColor: `#4361ee`,
     scales: {
       x: {
-        ticks: {
-          color: "#5F7681",
-        },
+        position: isMobile ? ("top" as const) : ("bottom" as const),
+        color: "#5F7681",
       },
       y: {
-        ticks: {
-          color: "#4361ee",
-          precision: 0,
-        },
+        position: "left" as const,
+        color: "#4361ee",
       },
+    },
+    layout: {
+      padding: 0,
+
+      display: "flex" as const,
     },
   };
 
@@ -95,7 +102,10 @@ const AdminReport: FC<AdminReportProps> = () => {
       </div>
       <div className={styles.brief}></div>
       <div className={styles.main}>
-        <Bar className={styles.vacationsReportTable} data={chartData} options={chartOptions} />
+        <div className={styles.container}>
+
+        <Bar className={styles.vacationsReportTable} data={data} options={options} />
+        </div>
       </div>
     </div>
   );

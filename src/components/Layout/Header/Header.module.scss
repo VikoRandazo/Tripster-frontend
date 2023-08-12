@@ -1,6 +1,7 @@
 @import "../../../styles/colorPallete.module.scss";
 @import "../../../styles/mixins.module.scss";
 @import "../../../styles/elements.module.scss";
+@import "../../../styles/breakpoints.module.scss";
 
 .hidden {
   display: none;
@@ -18,18 +19,26 @@
   justify-content: space-between;
   box-shadow: 0 0 0.5em 0.125em rgba($colorBackgroundDark, 0.1);
 
+  @include respond("phone") {
+    padding: 1em;
+  }
+
+  @include respond("tablet") {
+    padding: 1em;
+  }
+
   & > .logo {
     @extend %flexRow;
     height: 100%;
-
     & > svg {
       height: 100%;
+      
     }
   }
 
   & > .tabs {
     display: none;
-    width: 25%;
+    width: max(33%, 400px);
 
     &.Admin {
       @extend %flexRow;
@@ -59,7 +68,7 @@
   & > .buttons {
     @extend %flexRow;
     gap: 0.5em;
-    width: 30%;
+    width: max(33%, 400px);
     height: 100%;
     align-items: center;
     justify-content: flex-end;
@@ -84,32 +93,6 @@
 
     hr {
       height: 100%;
-    }
-
-    & > button.logoutBtn {
-      height: 3em;
-      width: auto;
-      max-width: 10%;
-      background-color: rgba($colorWarning, 0.05);
-      border: 0.125em solid rgba($colorWarning, 0.6);
-      @extend %flexRow;
-      align-items: center;
-      color: rgba($colorWarning, 0.6);
-
-      &:hover {
-        background-color: rgba($colorWarning, 1);
-        color: $colorBackgroundPage;
-
-        & > svg {
-          color: $colorBackgroundPage;
-        }
-      }
-
-      & > svg {
-        height: 1.5em;
-        width: 1.5em;
-        color: rgba($colorWarning, 0.7);
-      }
     }
   }
 }

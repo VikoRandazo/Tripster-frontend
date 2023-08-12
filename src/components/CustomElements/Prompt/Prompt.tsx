@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import styles from "./Prompt.module.scss";
+import { HiExclamationTriangle } from "react-icons/hi2";
+import { useResponsive } from "../../../styles/responsive/useResponsive";
 
 interface PromptProps {
   message: string;
@@ -9,8 +11,14 @@ interface PromptProps {
 }
 
 const Prompt: FC<PromptProps> = ({ message, onClose, onConfirm, data }) => {
+
+  const responsive = useResponsive()
+  const {isMobile} = responsive
   return (
     <div className={styles.Prompt}>
+     {isMobile ? <div className={styles.creative}>
+      <HiExclamationTriangle />
+      </div> : null} 
       <div className={styles.title}>
         <h2>Confirmation</h2>
       </div>

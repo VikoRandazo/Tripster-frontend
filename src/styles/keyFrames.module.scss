@@ -67,15 +67,13 @@
 
 @keyframes expandSideBar {
   0% {
-    width: 5%;
-    background-color: #fff;
-    border-right: 0.0625em solid rgba($colorBorder, 0.2);
+    width: 0%;
+    opacity: 0;
   }
 
   100% {
-    width: 20%;
-    background-color: rgba($colorBorder, 0.2);
-    border-right: 0.0625em solid rgba($colorBorder, 0.2);
+    opacity: 1;
+    width: 100%;
   }
 }
 

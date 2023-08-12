@@ -6,13 +6,23 @@
 .AdminReport {
   width: 100%;
   height: 100%;
+  overflow: auto;
+  @extend %flexCol;
+
   & > .header {
     width: 100%;
+    height: auto;
 
     & > .filterBar {
       @extend %flexRow;
       justify-content: flex-start;
       gap: 1em;
+      width: 100%;
+
+      @include respond("phone") {
+        justify-content: space-between;
+      }
+
       & > button {
         max-width: 10em;
         @extend %flexRow;
@@ -23,12 +33,27 @@
       }
     }
   }
-  & > .brief {
-  }
 
   & > .main {
     width: 100%;
-    height: 90%;
+    height: auto;
     @extend %flexRow;
+    overflow: auto;
+
+    @include respond("phone") {
+      height: auto;
+    }
+
+    & > .container {
+      width: 80vw;
+      height: 80vh;
+      overflow: auto;
+    }
+
+    .vacationsReportTable {
+      max-height: 100%;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+    }
   }
 }

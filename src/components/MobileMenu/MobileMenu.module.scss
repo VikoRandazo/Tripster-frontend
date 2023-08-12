@@ -1,0 +1,47 @@
+@import "../../styles/elements.module.scss";
+@import "../../styles/colorPallete.module.scss";
+@import "../../styles/mixins.module.scss";
+
+.MobileMenu {
+  width: 100%;
+  height: 100%;
+  padding: 1em;
+  direction: rtl;
+  @extend %flexRow;
+  justify-content: space-between;
+
+  & > .sideBar {
+    display: none;
+
+    &.active {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999999;
+      width: 100%;
+      display: block;
+    }
+  }
+
+  & > .menuIcon {
+    height: 100%;
+    width: 10%;
+    & > svg {
+      height: 100%;
+      width: 50%;
+    }
+  }
+
+  & > .logo {
+    height: 100%;
+    width: 50%;
+    @extend %flexRow;
+    align-items: center;
+    justify-content: flex-end;
+
+    & > svg {
+      width: min(40%, 200px);
+    }
+  }
+}
