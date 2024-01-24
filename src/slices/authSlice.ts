@@ -23,10 +23,10 @@ const initAuthState = {
 
 export const authSlice = createSlice({
   name: "auth",
-  initialState: initAuthState as AuthSlice,
+  initialState: initAuthState,
   reducers: {
     setToken(state, { payload }) {
-      state.setToken = payload;
+      state.setToken = payload
     },
 
     setUser(state, { payload }) {

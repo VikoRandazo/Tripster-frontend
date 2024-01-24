@@ -25,18 +25,6 @@ const Login: FC<LoginProps> = () => {
     password: "",
   });
 
-  // const getUserFromDatabase = async () => {
-  //   try {
-  //     const response = await axios.get(`http://localhost:5000/api/auth/${user.email}`);
-  //     dispatch(authActions.setUser(response.data.user));
-  //     console.log(response.data);
-  //     setUser(response.data.user);
-  //   } catch (error: any) {
-  //     setAlertMessage(error.message);
-  //     setIsActiveAlertModal(true);
-  //   }
-  // };
-
   const handleNavigate = () => {
     navigate("/register");
   };

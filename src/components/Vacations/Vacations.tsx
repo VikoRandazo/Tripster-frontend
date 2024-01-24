@@ -28,19 +28,47 @@ const Vacations: FC<VacationsProps> = () => {
   const dispatch = useDispatch();
   const [isActiveAlertModal, setIsActiveAlertModal] = useState<boolean>(false);
   const allLikes = useSelector((state: StoreRootTypes) => state.auth.allLikes);
+  const [slicedData, setSlicedData] = useState<VacationType[]>([]);
+  const [vacationObj, setVacationObj] = useState<VacationType>({
+    vacation_id: 0,
+    destination: "",
+    description: "",
+    start_date: "",
+    end_date: "",
+    price: 0,
+    image_path: "",
+  });
+  const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
+  const [filteredVacations, setFilteredVacations] = useState<VacationType[]>([]);
+  const [perPage, setPerPage] = useState<number>(10);
   const token = localStorage.getItem(`token`);
+  const vacationStatusRef = useRef<HTMLSelectElement>(null);
 
   const getUser = () => {
     if (token) {
       dispatch(authActions.setUser(jwtDecode(token)));
     }
-  }
-
-
+  };
 
   useEffect(() => {
     getUser();
+    setTimeout(() => {
+      getVacations();
+    }, 3000);
   }, []);
+
+  useEffect(() => {
+    getLikes();
+  }, [user]);
+
+  useEffect(() => {
+    setFilteredVacations(vacations);
+  }, [vacations]);
+
+  useEffect(() => {
+    sortAndSetSlicedData(filteredVacations);
+  }, [filteredVacations, currentPage]);
+
   const getVacations = async () => {
     try {
       const response = await instance.get(`/vacations/all`);
@@ -61,14 +89,6 @@ const Vacations: FC<VacationsProps> = () => {
       console.log(error);
     }
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      getVacations();
-    }, 3000);
-  }, []);
-
-  const vacations = useSelector((state: StoreRootTypes) => state.vacations.setVacations);
 
   const getLikes = async () => {
     if (!user.isAdmin) {
@@ -92,31 +112,9 @@ const Vacations: FC<VacationsProps> = () => {
     }
   };
 
-  useEffect(() => {
-    getLikes();
-  }, [user]);
-
   const onClose = () => {
     setIsActiveAlertModal(false);
   };
-
-  const [slicedData, setSlicedData] = useState<VacationType[]>([]);
-
-  const [vacationObj, setVacationObj] = useState<VacationType>({
-    vacation_id: 0,
-    destination: "",
-    description: "",
-    start_date: "",
-    end_date: "",
-    price: 0,
-    image_path: "",
-  });
-
-  const [filteredVacations, setFilteredVacations] = useState<VacationType[]>([]);
-
-  useEffect(() => {
-    setFilteredVacations(vacations);
-  }, [vacations]);
 
   const handleVacationStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCurrentPage(1);
@@ -140,7 +138,7 @@ const Vacations: FC<VacationsProps> = () => {
     });
     setFilteredVacations(filteredVacations);
   };
-  const vacationStatusRef = useRef<HTMLSelectElement>(null);
+
   const resetFilters = () => {
     resetForm();
     setCurrentPage(1);
@@ -172,8 +170,6 @@ const Vacations: FC<VacationsProps> = () => {
     },
   });
 
-  const [perPage, setPerPage] = useState<number>(10);
-
   const sortAndSetSlicedData = (data: VacationType[]) => {
     const sortedData = data.slice().sort((a: VacationType, b: VacationType) => {
       return new Date(a.start_date).getTime() - new Date(b.start_date).getTime();
@@ -185,14 +181,6 @@ const Vacations: FC<VacationsProps> = () => {
 
     setSlicedData(dataInPage);
   };
-
-  useEffect(() => {
-    sortAndSetSlicedData(filteredVacations);
-  }, [filteredVacations, currentPage]);
-
-  // useEffect(() => {
-  //   console.log(allLikes);
-  // }, [allLikes]);
 
   return (
     <div className={styles.Vacations}>
